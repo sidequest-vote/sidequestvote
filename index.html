@@ -39,7 +39,7 @@
     height: 100vh;
     display: flex; flex-direction: column;
     justify-content: space-between;
-    padding: 28px 24px 28px;
+    padding: 22px 24px 22px;
   }
 
   /* ── TOP ── */
@@ -75,33 +75,33 @@
   .hero-eyebrow {
     font-size: 10px; letter-spacing: 0.2em;
     color: #52b788;
-    margin-bottom: 18px;
+    margin-bottom: 12px;
   }
 
   .hero-title {
     font-family: 'Space Mono', monospace;
-    font-size: clamp(52px, 15vw, 96px);
+    font-size: clamp(44px, 13vw, 96px);
     font-weight: 700;
     color: #ffffff;
     letter-spacing: -3px;
     line-height: 0.92;
-    margin-bottom: 22px;
+    margin-bottom: 14px;
   }
   .hero-title .slash { color: #2d6a4f; }
 
   .split-bar {
     display: flex; height: 4px; width: 160px;
     border-radius: 2px; overflow: hidden;
-    margin-bottom: 22px;
+    margin-bottom: 14px;
   }
   .split-a { flex: 1; background: #52b788; }
-  .split-b { flex: 1; background: #FB923C; }
+  .split-b { flex: 1; background: #D4A017; }
 
   .hero-desc {
     font-size: 13px;
     color: #666666;
     line-height: 1.8;
-    margin-bottom: 36px;
+    margin-bottom: 24px;
   }
 
   /* ── CTA BUTTON — green bg, dark text ── */
@@ -135,7 +135,7 @@
     color: #2d6a4f;
   }
 
-  .steps { text-align: right; }
+  .steps { text-align: right; flex-shrink: 0; }
   .step-line {
     font-size: 10px; letter-spacing: 0.06em;
     color: #444444;
@@ -158,7 +158,7 @@
 
   <div class="hero">
     <div class="hero-eyebrow">// THE WORLD'S FIRST ROLLING OPINION POLL</div>
-    <div class="hero-title">PICK<br>A<br>SIDE<span class="slash">.</span></div>
+    <div class="hero-title">PICK<br>A<br>SIDE<span style="color:#ffffff;">.</span></div>
     <div class="split-bar">
       <div class="split-a"></div>
       <div class="split-b"></div>
