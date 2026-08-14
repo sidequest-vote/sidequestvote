@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAC0UlEQVR4nO2Xa0iTYRTHf7t46Z02N83emrpQhxplarXAwLRIKj+EYULkBYIi6kMUQtENCoL6FIFQRBeiEPwwIiOKAku6YClilnnXUpfTlre1Td20PpRWuDfS0BF4Pr087zn/8zvnOTwPj2z5vq1f8aLJvZl8DgBAJgjC/z0Doih6F+BfbQ5gDkAp9SNQvxDDjlSCYsJR+PlgN1tpMT2ju7xOUkwjKDmToWNznBqVr4Jai5NTD8w8abZJxnjsgFLww3g6j+D4SDofVdF25wWCqCWhIAtNXISkWHF+FDtXBtM16OJhwwAJOgHTrmhW6ISpAQSEh+ITMI/BNguNRaU0F5fRWFSKy+ZEu2yJRyFjhIo1ehXmgRHWFzaQc7OVC2UWlHIZe5MXSAJ43IIv7T2M9NvRxIZjPJVH98t6rNUttN+vkBRKDPte5eMmG0PuMQAe1A1yMFUkMUw1NQC3c5iXJ28Qk7OBkKToiap7333gbWEJju6+STGB/goA+p2jE2t9TjcA8/2lZ11yCO1mK1XnilH4+aCJjUCfYWTBSgPxBzIpP3ptkv9n+/dk6nmKibWgH9+99tFJ/uPmES0ycy1pVw6hzzAyOuzC+rqFmgu3ARBEjUehNx+dAKREBqKUywBIM8wHoKbLIQngsQPW6haistcRm5+OOlrHcJ8N7VI9AD0VjR6FKjvsVHbYWRWuomS3gfpuJ7mrQ3CPfeVquVUSQPI6DjLoiMpOQR2tQ+Hvy5B1gK7ntbSanjLm+tlSURSxWCwAhKiUnM+MYMtSNUq5jPe9wxy/Z+Zubf/UAf7WfgUYtxPpiylYL3LpeQ+H73b+MX5GjuLrr6zYR8bYkxzKxe16jm1cNLsAnf0j5N5qpenTENtWaMhK0Er6zsgWTMW8fhvOAUwcRJtMJ6clUL3/MgNnk6YVqz5S5f0OyB0Oh8yrAADegnA4HLLfEs/mM2286G9yXe2fxWtnmgAAAABJRU5ErkJggg==">
+<title>SIDE/QUEST</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0a0a0a;
+    --bg1:      #111;
+    --bg2:      #161616;
+    --border:   #222;
+    --border2:  #333;
+    --muted:    #666;
+    --sub:      #888;
+    --dim:      #aaa;
+    --text:     #ccc;
+    --white:    #fff;
+    --ca:       #38BDF8;
+    --cb:       #FB923C;
+    --flip:     #F59E0B;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── TABS ─── */
+  .tabs {
+    display: flex;
+    border-bottom: 0.5px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 100;
+  }
+  .tab {
+    flex: 1;
+    padding: 15px 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .tab.active { color: var(--white); border-bottom-color: var(--white); }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ─── TOPBAR ─── */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -1px;
+  }
+  .logo span { color: var(--muted); }
+  .live-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+  }
+  .live-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--ca);
+    animation: pulse 1.4s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  /* ─── QUEST BAR ─── */
+  .quest-bar {
+    padding: 12px 16px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .quest-prefix { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; }
+  .quest-title {
+    font-size: 14px;
+    color: var(--dim);
+    font-weight: 500;
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  /* ─── BATTLE ─── */
+  .battle { display: grid; grid-template-columns: 1fr 1fr; }
+  .battle-side {
+    padding: 20px 14px;
+    border-right: 0.5px solid var(--border);
+  }
+  .battle-side:last-child { border-right: none; }
+  .side-tag {
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .side-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--dim);
+    margin-bottom: 12px;
+    line-height: 1.3;
+    min-height: 36px;
+  }
+  .side-amount {
+    font-family: 'Space Mono', monospace;
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+  .side-voters {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .winning-tag {
+    display: none;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-top: 10px;
+    font-weight: 600;
+  }
+
+  /* ─── BAR ─── */
+  .bar-section {
+    padding: 14px 16px;
+    border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .bar-track {
+    height: 10px;
+    background: var(--bg1);
+    border-radius: 5px;
+    overflow: hidden;
+    display: flex;
+  }
+  .bar-a {
+    background: var(--ca);
+    border-radius: 5px 0 0 5px;
+    transition: width 0.8s cubic-bezier(.4,0,.2,1);
+  }
+  .bar-b {
+    background: var(--cb);
+    border-radius: 0 5px 5px 0;
+    flex: 1;
+    transition: width 0.8s cubic-bezier(.4,0,.2,1);
+  }
+  .bar-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 7px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* ─── STATUS ─── */
+  .status-line {
+    padding: 13px 16px;
+    border-bottom: 0.5px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    min-height: 46px;
+  }
+
+  /* ─── TICKER ─── */
+  .ticker-wrap {
+    overflow: hidden;
+    border-bottom: 0.5px solid var(--border);
+    background: #050505;
+    padding: 8px 0;
+  }
+  .ticker-inner {
+    display: flex;
+    gap: 0;
+    white-space: nowrap;
+    animation: scroll 22s linear infinite;
+    width: max-content;
+  }
+  @keyframes scroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .tick-item { font-size: 10px; letter-spacing: 0.06em; padding: 0 16px; }
+  .tick-sep { color: var(--border); margin: 0 4px; }
+
+  /* ─── FEED ─── */
+  .feed-section { padding: 14px 16px 0; }
+  .feed-header {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .feed-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 12px;
+    border-radius: 5px;
+    margin-bottom: 3px;
+    animation: fadeIn 0.35s ease;
+  }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+  .feed-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .feed-side { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; }
+  .feed-amt {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+    margin-left: auto;
+  }
+  .feed-time { font-size: 10px; color: var(--muted); margin-left: 10px; }
+  .feed-flip {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: #1a1200;
+    color: var(--flip);
+    margin-left: 4px;
+  }
+  .feed-empty { font-size: 11px; color: var(--border2); padding: 12px; letter-spacing: 0.06em; }
+
+  /* ─── QR SECTION ─── */
+  .qr-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 0.5px solid var(--border);
+    margin-top: 16px;
+  }
+  .qr-side {
+    padding: 20px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    border-right: 0.5px solid var(--border);
+  }
+  .qr-side:last-child { border-right: none; }
+  .qr-box {
+    width: 100px; height: 100px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0.5px solid var(--border2);
+    background: var(--bg1);
+  }
+  .qr-img { width: 80px; height: 80px; object-fit: contain; border-radius: 4px; }
+  .qr-placeholder-text {
+    font-size: 9px;
+    color: var(--border2);
+    text-align: center;
+    letter-spacing: 0.06em;
+    line-height: 1.6;
+    padding: 8px;
+  }
+  .qr-label { font-size: 11px; letter-spacing: 0.1em; font-weight: 600; text-align: center; }
+  .qr-sub { font-size: 10px; color: var(--muted); text-align: center; }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    padding: 16px;
+    text-align: center;
+    border-top: 0.5px solid var(--border);
+    margin-top: 16px;
+  }
+  .footer-text { font-size: 10px; color: var(--border2); letter-spacing: 0.1em; }
+
+  /* ─── ADMIN ─── */
+  .admin { padding: 20px 16px; }
+  .admin-section-label {
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .admin-section { margin-bottom: 24px; }
+
+  .field { margin-bottom: 16px; }
+  .field-label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--sub);
+    margin-bottom: 8px;
+  }
+  .field input[type=text],
+  .field input[type=number],
+  .field input[type=password] {
+    width: 100%;
+    background: var(--bg1);
+    border: 0.5px solid var(--border2);
+    border-radius: 6px;
+    padding: 14px 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    color: var(--white);
+    outline: none;
+    -webkit-appearance: none;
+  }
+  .field input:focus { border-color: var(--sub); }
+  .field input::placeholder { color: var(--border2); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .color-pick {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg1);
+    border: 0.5px solid var(--border2);
+    border-radius: 6px;
+    padding: 10px 14px;
+  }
+  .color-pick input[type=color] {
+    width: 36px; height: 36px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 4px;
+  }
+  .color-hex { font-size: 13px; color: var(--dim); letter-spacing: 0.04em; }
+
+  .preview-strip {
+    display: flex;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 12px 0 20px;
+  }
+  .preview-a { flex: 1; background: var(--ca); }
+  .preview-b { flex: 1; background: var(--cb); }
+
+  .preset-label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .presets { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+  .preset {
+    background: var(--bg1);
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    padding: 11px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .preset:active { background: var(--bg2); }
+  .preset-dots { display: flex; gap: 4px; }
+  .preset-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .preset-name { font-size: 10px; color: var(--sub); letter-spacing: 0.04em; }
+
+  .divider { border: none; border-top: 0.5px solid var(--border); margin: 20px 0; }
+
+  /* balance inputs */
+  .balance-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .balance-card {
+    background: var(--bg1);
+    border: 0.5px solid var(--border2);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .balance-label {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .balance-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 0.5px solid var(--border2);
+    padding: 6px 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    outline: none;
+    -webkit-appearance: none;
+  }
+  .balance-prefix { font-family: 'Space Mono', monospace; font-size: 16px; color: var(--muted); margin-right: 2px; }
+
+  .voters-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 4px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    outline: none;
+    margin-top: 6px;
+    -webkit-appearance: none;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 17px;
+    background: var(--white);
+    color: var(--bg);
+    border: none;
+    border-radius: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    margin-bottom: 10px;
+  }
+  .btn-primary:active { background: #ccc; }
+
+  .btn-secondary {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    color: var(--muted);
+    border: 0.5px solid var(--border2);
+    border-radius: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    margin-bottom: 10px;
+  }
+  .btn-secondary:active { background: var(--bg1); }
+
+  .btn-danger {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    color: #555;
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-danger:active { background: #110000; color: #ef4444; border-color: #3a0000; }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: var(--white);
+    color: var(--bg);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    padding: 10px 20px;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+    z-index: 999;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* lock screen */
+  .lock-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  .lock-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -1px;
+    margin-bottom: 32px;
+  }
+  .lock-logo span { color: var(--muted); }
+  .lock-label { font-size: 10px; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 10px; }
+  .lock-input {
+    width: 100%;
+    max-width: 280px;
+    background: var(--bg1);
+    border: 0.5px solid var(--border2);
+    border-radius: 6px;
+    padding: 15px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px;
+    color: var(--white);
+    outline: none;
+    text-align: center;
+    letter-spacing: 0.2em;
+    margin-bottom: 14px;
+    -webkit-appearance: none;
+  }
+  .lock-input:focus { border-color: var(--sub); }
+  .lock-btn {
+    width: 100%;
+    max-width: 280px;
+    padding: 15px;
+    background: var(--white);
+    color: var(--bg);
+    border: none;
+    border-radius: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+  }
+  .lock-error { font-size: 11px; color: #ef4444; letter-spacing: 0.06em; margin-top: 10px; display: none; }
+
+  @media (min-width: 480px) {
+    .side-amount { font-size: 40px; }
+    .side-name { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-logo">SIDE<span>/</span>QUEST</div>
+  <div class="lock-label">// ADMIN PASSWORD</div>
+  <input class="lock-input" type="password" id="lockInput" placeholder="••••••" maxlength="20">
+  <button class="lock-btn" onclick="checkLock()">// ENTER ADMIN</button>
+  <div class="lock-error" id="lockError">// incorrect password</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('live')">// LIVE</button>
+  <button class="tab" onclick="switchTab('admin')">// ADMIN</button>
+  <button class="tab" onclick="switchTab('stats')">// STATS</button>
+</div>
+
+<!-- ══════════════ LIVE VIEW ══════════════ -->
+<div class="view active" id="view-live">
+
+  <div class="topbar">
+    <div class="logo">SIDE<span>/</span>QUEST</div>
+    <div class="live-pill"><div class="live-dot" id="liveDot"></div>LIVE</div>
+  </div>
+
+  <div class="quest-bar">
+    <div class="quest-prefix">// QUEST</div>
+    <div class="quest-title" id="questTitle">The Cybertruck — love it or hate it?</div>
+  </div>
+
+  <div class="battle">
+    <div class="battle-side" id="sideACard">
+      <div class="side-tag" id="tagA" style="color:var(--ca);">// SIDE A</div>
+      <div class="side-name" id="nameADisplay">Love it</div>
+      <div class="side-amount" id="amtADisplay" style="color:var(--ca);">$0</div>
+      <div class="side-voters" id="votersADisplay">0 VOTERS</div>
+      <div class="winning-tag" id="winA">WINNING</div>
+    </div>
+    <div class="battle-side" id="sideBCard">
+      <div class="side-tag" id="tagB" style="color:var(--cb);">// SIDE B</div>
+      <div class="side-name" id="nameBDisplay">Hate it</div>
+      <div class="side-amount" id="amtBDisplay" style="color:var(--cb);">$0</div>
+      <div class="side-voters" id="votersBDisplay">0 VOTERS</div>
+      <div class="winning-tag" id="winB">WINNING</div>
+    </div>
+  </div>
+
+  <div class="bar-section">
+    <div class="bar-track">
+      <div class="bar-a" id="barA" style="width:50%;"></div>
+      <div class="bar-b" id="barB"></div>
+    </div>
+    <div class="bar-meta">
+      <span id="pctA">50%</span>
+      <span id="pctB">50%</span>
+    </div>
+  </div>
+
+  <div class="status-line" id="statusLine">// awaiting first vote</div>
+
+  <div class="ticker-wrap">
+    <div class="ticker-inner" id="tickerInner">
+      <span class="tick-item" style="color:var(--muted);">SIDE/QUEST<span class="tick-sep">|</span></span>
+      <span class="tick-item" style="color:var(--border2);">EVERY OPINION HAS A PRICE<span class="tick-sep">|</span></span>
+      <span class="tick-item" style="color:var(--muted);">SIDE/QUEST<span class="tick-sep">|</span></span>
+      <span class="tick-item" style="color:var(--border2);">EVERY OPINION HAS A PRICE<span class="tick-sep">|</span></span>
+    </div>
+  </div>
+
+  <div class="feed-section">
+    <div class="feed-header">
+      <div class="live-dot" style="background:var(--border2);animation:none;"></div>
+      // LIVE FEED
+    </div>
+    <div id="feedList">
+      <div class="feed-empty">// no votes yet — waiting...</div>
+    </div>
+  </div>
+
+  <div class="qr-section">
+    <div class="qr-side">
+      <div class="qr-box" id="qrBoxA">
+        <div class="qr-placeholder-text">QR CODE<br>SIDE A<br>// set in admin</div>
+      </div>
+      <div class="qr-label" id="qrLabelA" style="color:var(--ca);">LOVE IT</div>
+      <div class="qr-sub">Scan to vote</div>
+    </div>
+    <div class="qr-side">
+      <div class="qr-box" id="qrBoxB">
+        <div class="qr-placeholder-text">QR CODE<br>SIDE B<br>// set in admin</div>
+      </div>
+      <div class="qr-label" id="qrLabelB" style="color:var(--cb);">HATE IT</div>
+      <div class="qr-sub">Scan to vote</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-text">SIDEQUEST.VOTE — EVERY OPINION HAS A PRICE</div>
+  </div>
+
+</div>
+
+<!-- ══════════════ ADMIN VIEW ══════════════ -->
+<div class="view" id="view-admin">
+<div class="admin">
+
+  <div class="admin-section">
+    <div class="admin-section-label">// 01 — LIVE BALANCES</div>
+    <p style="font-size:11px;color:var(--sub);line-height:1.7;margin-bottom:14px;">Check your Venmo accounts and enter the current totals. Hit update to push to the live board.</p>
+    <div class="balance-row">
+      <div class="balance-card" id="balCardA">
+        <div class="balance-label" id="balLabelA" style="color:var(--ca);">// SIDE A</div>
+        <div style="display:flex;align-items:baseline;">
+          <span class="balance-prefix">$</span>
+          <input class="balance-input" type="number" id="balInputA" value="0" min="0" step="1" placeholder="0">
+        </div>
+        <input class="voters-input" type="number" id="balVotersA" value="0" min="0" step="1" placeholder="voters">
+      </div>
+      <div class="balance-card" id="balCardB">
+        <div class="balance-label" id="balLabelB" style="color:var(--cb);">// SIDE B</div>
+        <div style="display:flex;align-items:baseline;">
+          <span class="balance-prefix">$</span>
+          <input class="balance-input" type="number" id="balInputB" value="0" min="0" step="1" placeholder="0">
+        </div>
+        <input class="voters-input" type="number" id="balVotersB" value="0" min="0" step="1" placeholder="voters">
+      </div>
+    </div>
+    <button class="btn-primary" onclick="updateBalances()">// UPDATE LIVE BOARD</button>
+  </div>
+
+  <div class="admin-section">
+    <div class="admin-section-label">// 02 — QUEST SETTINGS</div>
+    <div class="field">
+      <label class="field-label">// QUEST TITLE</label>
+      <input type="text" id="adminTitle" value="The Cybertruck — love it or hate it?" placeholder="What are people voting on?">
+    </div>
+    <div class="two-col">
+      <div class="field">
+        <label class="field-label">// SIDE A NAME</label>
+        <input type="text" id="adminNameA" value="Love it" oninput="updatePreview()">
+      </div>
+      <div class="field">
+        <label class="field-label">// SIDE B NAME</label>
+        <input type="text" id="adminNameB" value="Hate it" oninput="updatePreview()">
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="field">
+        <label class="field-label">// SIDE A COLOR</label>
+        <div class="color-pick">
+          <input type="color" id="colorA" value="#38BDF8" oninput="updatePreview()">
+          <span class="color-hex" id="hexA">#38BDF8</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">// SIDE B COLOR</label>
+        <div class="color-pick">
+          <input type="color" id="colorB" value="#FB923C" oninput="updatePreview()">
+          <span class="color-hex" id="hexB">#FB923C</span>
+        </div>
+      </div>
+    </div>
+    <div class="preview-strip">
+      <div class="preview-a" id="previewA"></div>
+      <div class="preview-b" id="previewB"></div>
+    </div>
+
+    <div class="preset-label">// QUICK PRESETS</div>
+    <div class="presets">
+      <div class="preset" onclick="applyPreset('#00C896','#FF4B6E','Love it','Hate it','Love vs Hate')">
+        <div class="preset-dots"><div class="preset-dot" style="background:#00C896;"></div><div class="preset-dot" style="background:#FF4B6E;"></div></div>
+        <span class="preset-name">love vs hate</span>
+      </div>
+      <div class="preset" onclick="applyPreset('#A78BFA','#60A5FA','Star Wars','Star Trek','Star Wars vs Star Trek')">
+        <div class="preset-dots"><div class="preset-dot" style="background:#A78BFA;"></div><div class="preset-dot" style="background:#60A5FA;"></div></div>
+        <span class="preset-name">star wars vs trek</span>
+      </div>
+      <div class="preset" onclick="applyPreset('#F59E0B','#22C55E','Chiefs','Eagles','Chiefs vs Eagles')">
+        <div class="preset-dots"><div class="preset-dot" style="background:#F59E0B;"></div><div class="preset-dot" style="background:#22C55E;"></div></div>
+        <span class="preset-name">chiefs vs eagles</span>
+      </div>
+      <div class="preset" onclick="applyPreset('#F472B6','#818CF8','Taylor Swift','Beyoncé','Taylor vs Beyoncé')">
+        <div class="preset-dots"><div class="preset-dot" style="background:#F472B6;"></div><div class="preset-dot" style="background:#818CF8;"></div></div>
+        <span class="preset-name">taylor vs beyoncé</span>
+      </div>
+      <div class="preset" onclick="applyPreset('#38BDF8','#FB923C','Love it','Hate it','The Cybertruck — love it or hate it?')">
+        <div class="preset-dots"><div class="preset-dot" style="background:#38BDF8;"></div><div class="preset-dot" style="background:#FB923C;"></div></div>
+        <span class="preset-name">cybertruck</span>
+      </div>
+      <div class="preset" onclick="applyPreset('#34D399','#F87171','iPhone','Android','iPhone vs Android')">
+        <div class="preset-dots"><div class="preset-dot" style="background:#34D399;"></div><div class="preset-dot" style="background:#F87171;"></div></div>
+        <span class="preset-name">iphone vs android</span>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="launchQuest()">// LAUNCH QUEST</button>
+  </div>
+
+  <div class="admin-section">
+    <div class="admin-section-label">// 03 — VENMO QR CODES</div>
+    <p style="font-size:11px;color:var(--sub);line-height:1.7;margin-bottom:14px;">Upload the QR code images for each Venmo account. These appear on the live board for people to scan.</p>
+    <div class="two-col" style="margin-bottom:14px;">
+      <div class="field">
+        <label class="field-label" id="qrUploadLabelA" style="color:var(--ca);">// SIDE A QR</label>
+        <input type="file" id="qrFileA" accept="image/*" onchange="uploadQR('a')" style="display:none;">
+        <button class="btn-secondary" onclick="document.getElementById('qrFileA').click()" style="margin-bottom:0;">// UPLOAD QR A</button>
+      </div>
+      <div class="field">
+        <label class="field-label" id="qrUploadLabelB" style="color:var(--cb);">// SIDE B QR</label>
+        <input type="file" id="qrFileB" accept="image/*" onchange="uploadQR('b')" style="display:none;">
+        <button class="btn-secondary" onclick="document.getElementById('qrFileB').click()" style="margin-bottom:0;">// UPLOAD QR B</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-section">
+    <div class="admin-section-label">// 04 — DANGER ZONE</div>
+    <button class="btn-danger" onclick="confirmReset()">// RESET ALL VOTE COUNTS TO ZERO</button>
+  </div>
+
+</div>
+</div>
+
+
+<!-- ══════════════ STATS VIEW ══════════════ -->
+<div class="view" id="view-stats">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:0.5px solid var(--border);">
+    <div style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:#fff;letter-spacing:-1px;">SIDE<span style="color:var(--muted);">/</span>QUEST</div>
+    <div style="font-size:10px;letter-spacing:0.12em;color:var(--muted);">// QUEST ANALYTICS</div>
+  </div>
+  <div class="stats-summary" id="statsSummary"></div>
+  <div class="stats-tabs">
+    <button class="stats-tab active" id="stab-list" onclick="switchStatsTab('list')">// HISTORY</button>
+    <button class="stats-tab" id="stab-charts" onclick="switchStatsTab('charts')">// CHARTS</button>
+  </div>
+  <div class="stats-view active" id="sview-list">
+    <div id="questHistoryList"></div>
+    <div style="padding:16px;">
+      <button class="btn-secondary" onclick="archiveCurrentQuest()" style="margin-bottom:0;">// ARCHIVE CURRENT QUEST &amp; RESET</button>
+    </div>
+  </div>
+  <div class="stats-view" id="sview-charts">
+    <div style="padding:16px;">
+      <div class="chart-label">// TOTAL $ RAISED PER QUEST</div>
+      <div class="chart-wrap" id="chartTotal"></div>
+      <div class="chart-label" style="margin-top:20px;">// VOTERS PER QUEST</div>
+      <div class="chart-wrap" id="chartVoters"></div>
+      <div class="chart-label" style="margin-top:20px;">// FLIP COUNT PER QUEST</div>
+      <div class="chart-wrap" id="chartFlips"></div>
+      <div class="chart-label" style="margin-top:20px;">// AVG VOTE SIZE ($)</div>
+      <div class="chart-wrap" id="chartAvg"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .stats-summary { display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:0.5px solid var(--border); }
+  .summary-card { padding:14px 10px;border-right:0.5px solid var(--border); }
+  .summary-card:last-child { border-right:none; }
+  .summary-label { font-size:9px;letter-spacing:0.1em;color:var(--muted);margin-bottom:5px; }
+  .summary-val { font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:#fff;line-height:1; }
+  .summary-sub { font-size:9px;color:var(--muted);margin-top:3px; }
+  .stats-tabs { display:flex;border-bottom:0.5px solid var(--border); }
+  .stats-tab { flex:1;padding:12px 8px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--muted);background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer; }
+  .stats-tab.active { color:#fff;border-bottom-color:#fff; }
+  .stats-view { display:none; }
+  .stats-view.active { display:block; }
+  .quest-card { border-bottom:0.5px solid var(--border);padding:16px; }
+  .quest-card-top { display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px; }
+  .quest-card-title { font-size:13px;font-weight:600;color:#fff;line-height:1.3;flex:1;margin-right:8px; }
+  .quest-card-date { font-size:9px;color:var(--muted);letter-spacing:0.06em;white-space:nowrap; }
+  .quest-metrics { display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px; }
+  .quest-metric { background:var(--bg1);border-radius:5px;padding:8px 8px; }
+  .quest-metric-label { font-size:8px;letter-spacing:0.08em;color:var(--muted);margin-bottom:3px; }
+  .quest-metric-val { font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#fff; }
+  .quest-bar-mini { display:flex;height:4px;border-radius:2px;overflow:hidden;margin-top:8px; }
+  .quest-winner-tag { font-size:9px;font-weight:600;letter-spacing:0.08em;padding:2px 8px;border-radius:3px;display:inline-block;margin-bottom:8px; }
+  .chart-label { font-size:9px;letter-spacing:0.12em;color:var(--muted);margin-bottom:10px; }
+  .chart-wrap { background:var(--bg1);border-radius:8px;padding:14px; }
+  .chart-inner { display:flex;align-items:flex-end;gap:8px;height:110px; }
+  .chart-group { display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:0; }
+  .chart-bars { display:flex;gap:2px;align-items:flex-end;width:100%; }
+  .chart-bar { flex:1;border-radius:2px 2px 0 0;min-height:2px; }
+  .chart-blabel { font-size:8px;color:var(--muted);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%; }
+  .chart-bval { font-family:'Space Mono',monospace;font-size:8px;color:var(--sub);text-align:center; }
+  .chart-empty { font-size:11px;color:var(--border2);padding:24px;text-align:center;letter-spacing:0.06em; }
+  .no-quests { padding:40px 16px;text-align:center;font-size:11px;color:var(--muted);letter-spacing:0.06em;line-height:2.2; }
+</style>
+
+<script>
+const ADMIN_PASS = 'Sid3Quest!1';
+
+let state = {
+  title: 'The Cybertruck — love it or hate it?',
+  nameA: 'Love it', nameB: 'Hate it',
+  colorA: '#38BDF8', colorB: '#FB923C',
+  amtA: 0, amtB: 0,
+  votersA: 0, votersB: 0,
+  qrA: null, qrB: null,
+  feed: []
+};
+
+function save() {
+  try { localStorage.setItem('sq_state', JSON.stringify(state)); } catch(e){}
+}
+
+function load() {
+  try {
+    const s = localStorage.getItem('sq_state');
+    if (s) state = Object.assign(state, JSON.parse(s));
+  } catch(e){}
+}
+
+function checkLock() {
+  const val = document.getElementById('lockInput').value;
+  if (val === ADMIN_PASS) {
+    document.getElementById('lockScreen').style.display = 'none';
+  } else {
+    document.getElementById('lockError').style.display = 'block';
+    document.getElementById('lockInput').value = '';
+  }
+}
+
+document.getElementById('lockInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkLock();
+});
+
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach((el, i) => {
+    el.classList.toggle('active', (i===0&&t==='live')||(i===1&&t==='admin')||(i===2&&t==='stats'));
+  });
+  document.getElementById('view-live').classList.toggle('active', t === 'live');
+  document.getElementById('view-admin').classList.toggle('active', t === 'admin');
+  document.getElementById('view-stats').classList.toggle('active', t === 'stats');
+  if (t === 'stats') renderStats();
+}
+
+const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+const timeStr = () => new Date().toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit', second:'2-digit', hour12:true});
+
+function setVar(name, val) {
+  document.documentElement.style.setProperty(name, val);
+}
+
+function applyTheme() {
+  setVar('--ca', state.colorA);
+  setVar('--cb', state.colorB);
+
+  document.getElementById('liveDot').style.background = state.colorA;
+  document.getElementById('tagA').style.color = state.colorA;
+  document.getElementById('amtADisplay').style.color = state.colorA;
+  document.getElementById('winA').style.background = state.colorA + '22';
+  document.getElementById('winA').style.color = state.colorA;
+  document.getElementById('tagB').style.color = state.colorB;
+  document.getElementById('amtBDisplay').style.color = state.colorB;
+  document.getElementById('winB').style.background = state.colorB + '22';
+  document.getElementById('winB').style.color = state.colorB;
+  document.getElementById('sideACard').style.background = state.colorA + '0d';
+  document.getElementById('sideBCard').style.background = state.colorB + '0d';
+  document.getElementById('qrLabelA').style.color = state.colorA;
+  document.getElementById('qrLabelB').style.color = state.colorB;
+  document.getElementById('balLabelA').style.color = state.colorA;
+  document.getElementById('balLabelB').style.color = state.colorB;
+  document.getElementById('balCardA').style.borderColor = state.colorA + '44';
+  document.getElementById('balCardB').style.borderColor = state.colorB + '44';
+
+  document.getElementById('questTitle').textContent = state.title;
+  document.getElementById('nameADisplay').textContent = state.nameA;
+  document.getElementById('nameBDisplay').textContent = state.nameB;
+  document.getElementById('qrLabelA').textContent = state.nameA.toUpperCase();
+  document.getElementById('qrLabelB').textContent = state.nameB.toUpperCase();
+  document.getElementById('balLabelA').textContent = '// ' + state.nameA.toUpperCase();
+  document.getElementById('balLabelB').textContent = '// ' + state.nameB.toUpperCase();
+
+  if (state.qrA) {
+    document.getElementById('qrBoxA').innerHTML = `<img class="qr-img" src="${state.qrA}" alt="QR code side A">`;
+  }
+  if (state.qrB) {
+    document.getElementById('qrBoxB').innerHTML = `<img class="qr-img" src="${state.qrB}" alt="QR code side B">`;
+  }
+
+  syncAdminFields();
+  renderBoard();
+}
+
+function syncAdminFields() {
+  document.getElementById('adminTitle').value = state.title;
+  document.getElementById('adminNameA').value = state.nameA;
+  document.getElementById('adminNameB').value = state.nameB;
+  document.getElementById('colorA').value = state.colorA;
+  document.getElementById('colorB').value = state.colorB;
+  document.getElementById('hexA').textContent = state.colorA.toUpperCase();
+  document.getElementById('hexB').textContent = state.colorB.toUpperCase();
+  document.getElementById('previewA').style.background = state.colorA;
+  document.getElementById('previewB').style.background = state.colorB;
+  document.getElementById('balInputA').value = state.amtA;
+  document.getElementById('balInputB').value = state.amtB;
+  document.getElementById('balVotersA').value = state.votersA;
+  document.getElementById('balVotersB').value = state.votersB;
+}
+
+function updatePreview() {
+  const cA = document.getElementById('colorA').value;
+  const cB = document.getElementById('colorB').value;
+  document.getElementById('previewA').style.background = cA;
+  document.getElementById('previewB').style.background = cB;
+  document.getElementById('hexA').textContent = cA.toUpperCase();
+  document.getElementById('hexB').textContent = cB.toUpperCase();
+}
+
+function applyPreset(cA, cB, nA, nB, title) {
+  document.getElementById('colorA').value = cA;
+  document.getElementById('colorB').value = cB;
+  document.getElementById('adminNameA').value = nA;
+  document.getElementById('adminNameB').value = nB;
+  document.getElementById('adminTitle').value = title;
+  updatePreview();
+}
+
+function launchQuest() {
+  state.title = document.getElementById('adminTitle').value || state.title;
+  state.nameA = document.getElementById('adminNameA').value || state.nameA;
+  state.nameB = document.getElementById('adminNameB').value || state.nameB;
+  state.colorA = document.getElementById('colorA').value;
+  state.colorB = document.getElementById('colorB').value;
+  state.startedAt = new Date().toISOString();
+  save();
+  applyTheme();
+  showToast('// QUEST LAUNCHED');
+  setTimeout(() => switchTab('live'), 900);
+}
+
+function updateBalances() {
+  const newA = parseFloat(document.getElementById('balInputA').value) || 0;
+  const newB = parseFloat(document.getElementById('balInputB').value) || 0;
+  const newVA = parseInt(document.getElementById('balVotersA').value) || 0;
+  const newVB = parseInt(document.getElementById('balVotersB').value) || 0;
+
+  const prevWin = state.amtA > state.amtB ? 'a' : state.amtB > state.amtA ? 'b' : null;
+  const diffA = newA - state.amtA;
+  const diffB = newB - state.amtB;
+
+  state.amtA = newA; state.amtB = newB;
+  state.votersA = newVA; state.votersB = newVB;
+
+  const nowWin = newA > newB ? 'a' : newB > newA ? 'b' : null;
+  const flipped = prevWin && nowWin && prevWin !== nowWin;
+
+  if (diffA > 0) addFeedItem('a', diffA, flipped && nowWin === 'a');
+  if (diffB > 0) addFeedItem('b', diffB, flipped && nowWin === 'b');
+
+  save();
+  renderBoard();
+  showToast('// BOARD UPDATED');
+  setTimeout(() => switchTab('live'), 700);
+}
+
+function addFeedItem(side, amt, flipped) {
+  state.feed.unshift({
+    side, amt,
+    name: side === 'a' ? state.nameA : state.nameB,
+    color: side === 'a' ? state.colorA : state.colorB,
+    flipped,
+    time: timeStr()
+  });
+  if (state.feed.length > 8) state.feed.pop();
+}
+
+function renderFeed() {
+  const el = document.getElementById('feedList');
+  if (!state.feed.length) {
+    el.innerHTML = '<div class="feed-empty">// no votes yet — waiting...</div>';
+    return;
+  }
+  el.innerHTML = state.feed.map(f => `
+    <div class="feed-item" style="background:${f.color}0d;">
+      <div class="feed-dot" style="background:${f.color};"></div>
+      <span class="feed-side" style="color:${f.color};">${f.name.toUpperCase()}</span>
+      ${f.flipped ? '<span class="feed-flip">FLIP</span>' : ''}
+      <span class="feed-amt">${fmt(f.amt)}</span>
+      <span class="feed-time">${f.time}</span>
+    </div>`).join('');
+}
+
+function updateTicker() {
+  const lead = Math.abs(state.amtA - state.amtB);
+  const winner = state.amtA > state.amtB ? state.nameA : state.amtB > state.amtA ? state.nameB : null;
+  const tA = `<span class="tick-item" style="color:${state.colorA};">${state.nameA.toUpperCase()} ${fmt(state.amtA)}<span class="tick-sep">|</span></span>`;
+  const tB = `<span class="tick-item" style="color:${state.colorB};">${state.nameB.toUpperCase()} ${fmt(state.amtB)}<span class="tick-sep">|</span></span>`;
+  const tL = winner ? `<span class="tick-item" style="color:var(--sub);">LEAD ${winner.toUpperCase()} +${fmt(lead)}<span class="tick-sep">|</span></span>` : '';
+  const tF = winner ? `<span class="tick-item" style="color:var(--muted);">FLIP COST ${fmt(lead + 1)}<span class="tick-sep">|</span></span>` : '';
+  const tBrand = `<span class="tick-item" style="color:var(--border2);">SIDE/QUEST — EVERY OPINION HAS A PRICE<span class="tick-sep">|</span></span>`;
+  const h = tA + tB + tL + tF + tBrand;
+  document.getElementById('tickerInner').innerHTML = h + h;
+}
+
+function renderBoard() {
+  const { amtA, amtB, votersA, votersB, nameA, nameB, colorA, colorB } = state;
+  const total = amtA + amtB;
+
+  document.getElementById('amtADisplay').textContent = fmt(amtA);
+  document.getElementById('amtBDisplay').textContent = fmt(amtB);
+  document.getElementById('votersADisplay').textContent = votersA + ' VOTER' + (votersA !== 1 ? 'S' : '');
+  document.getElementById('votersBDisplay').textContent = votersB + ' VOTER' + (votersB !== 1 ? 'S' : '');
+
+  if (total === 0) {
+    document.getElementById('barA').style.width = '50%';
+    document.getElementById('pctA').textContent = '50%';
+    document.getElementById('pctB').textContent = '50%';
+    document.getElementById('statusLine').textContent = '// awaiting first vote';
+    document.getElementById('winA').style.display = 'none';
+    document.getElementById('winB').style.display = 'none';
+  } else {
+    const pA = Math.round((amtA / total) * 100);
+    const pB = 100 - pA;
+    document.getElementById('barA').style.width = pA + '%';
+    document.getElementById('pctA').textContent = pA + '%';
+    document.getElementById('pctB').textContent = pB + '%';
+
+    if (amtA > amtB) {
+      const diff = amtA - amtB;
+      document.getElementById('statusLine').innerHTML =
+        `// <span style="color:${colorA};">${nameA.toUpperCase()}</span> leading by ${fmt(diff)} — flip costs ${fmt(diff + 1)}`;
+      document.getElementById('winA').style.display = 'inline-block';
+      document.getElementById('winB').style.display = 'none';
+    } else if (amtB > amtA) {
+      const diff = amtB - amtA;
+      document.getElementById('statusLine').innerHTML =
+        `// <span style="color:${colorB};">${nameB.toUpperCase()}</span> leading by ${fmt(diff)} — flip costs ${fmt(diff + 1)}`;
+      document.getElementById('winB').style.display = 'inline-block';
+      document.getElementById('winA').style.display = 'none';
+    } else {
+      document.getElementById('statusLine').textContent = '// dead even — next dollar decides';
+      document.getElementById('winA').style.display = 'none';
+      document.getElementById('winB').style.display = 'none';
+    }
+  }
+
+  renderFeed();
+  updateTicker();
+}
+
+function uploadQR(side) {
+  const file = document.getElementById(side === 'a' ? 'qrFileA' : 'qrFileB').files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    if (side === 'a') {
+      state.qrA = e.target.result;
+      document.getElementById('qrBoxA').innerHTML = `<img class="qr-img" src="${state.qrA}" alt="QR code side A">`;
+    } else {
+      state.qrB = e.target.result;
+      document.getElementById('qrBoxB').innerHTML = `<img class="qr-img" src="${state.qrB}" alt="QR code side B">`;
+    }
+    save();
+    showToast('// QR CODE UPLOADED');
+  };
+  reader.readAsDataURL(file);
+}
+
+function confirmReset() {
+  if (confirm('Reset all vote counts to zero? This cannot be undone.')) {
+    state.amtA = 0; state.amtB = 0;
+    state.votersA = 0; state.votersB = 0;
+    state.feed = [];
+    save();
+    syncAdminFields();
+    renderBoard();
+    showToast('// COUNTS RESET');
+  }
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+
+// ── STATS ─────────────────────────────────────────────────────────────────
+
+function switchStatsTab(t) {
+  document.getElementById('stab-list').classList.toggle('active', t === 'list');
+  document.getElementById('stab-charts').classList.toggle('active', t === 'charts');
+  document.getElementById('sview-list').classList.toggle('active', t === 'list');
+  document.getElementById('sview-charts').classList.toggle('active', t === 'charts');
+  if (t === 'charts') renderCharts();
+}
+
+function archiveCurrentQuest() {
+  if (state.amtA === 0 && state.amtB === 0) {
+    showToast('// NO DATA TO ARCHIVE');
+    return;
+  }
+  if (!confirm('Archive this quest and reset vote counts?')) return;
+
+  const totalVoters = state.votersA + state.votersB;
+  const totalAmt = state.amtA + state.amtB;
+  const avgVote = totalVoters > 0 ? (totalAmt / totalVoters) : 0;
+  const flipCount = state.feed.filter(f => f.flipped).length;
+  const biggestVote = state.feed.reduce((max, f) => f.amt > max ? f.amt : max, 0);
+  const winner = state.amtA > state.amtB ? state.nameA : state.amtB > state.amtA ? state.nameB : 'TIE';
+
+  const quest = {
+    id: Date.now(),
+    title: state.title,
+    nameA: state.nameA,
+    nameB: state.nameB,
+    colorA: state.colorA,
+    colorB: state.colorB,
+    amtA: state.amtA,
+    amtB: state.amtB,
+    votersA: state.votersA,
+    votersB: state.votersB,
+    totalAmt,
+    totalVoters,
+    avgVote: Math.round(avgVote * 100) / 100,
+    flipCount,
+    biggestVote,
+    winner,
+    startedAt: state.startedAt || new Date().toISOString(),
+    endedAt: new Date().toISOString()
+  };
+
+  state.history = state.history || [];
+  state.history.unshift(quest);
+  state.amtA = 0; state.amtB = 0;
+  state.votersA = 0; state.votersB = 0;
+  state.feed = [];
+  state.startedAt = null;
+  save();
+  syncAdminFields();
+  renderBoard();
+  renderStats();
+  showToast('// QUEST ARCHIVED');
+}
+
+function fmtDuration(start, end) {
+  if (!start) return '—';
+  const ms = new Date(end) - new Date(start);
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  if (h > 24) return Math.floor(h/24) + 'd ' + (h%24) + 'h';
+  if (h > 0) return h + 'h ' + m + 'm';
+  return m + 'm';
+}
+
+function fmtDate(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+}
+
+function renderStats() {
+  const history = state.history || [];
+
+  // summary cards
+  const totalEarned = history.reduce((s, q) => s + q.totalAmt, 0);
+  const totalVoters = history.reduce((s, q) => s + q.totalVoters, 0);
+  const totalFlips  = history.reduce((s, q) => s + q.flipCount, 0);
+  document.getElementById('statsSummary').innerHTML = `
+    <div class="summary-card">
+      <div class="summary-label">// TOTAL EARNED</div>
+      <div class="summary-val">${fmt(totalEarned)}</div>
+      <div class="summary-sub">${history.length} quest${history.length!==1?'s':''}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">// TOTAL VOTERS</div>
+      <div class="summary-val">${totalVoters.toLocaleString()}</div>
+      <div class="summary-sub">all time</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">// TOTAL FLIPS</div>
+      <div class="summary-val">${totalFlips}</div>
+      <div class="summary-sub">lead changes</div>
+    </div>`;
+
+  // history list
+  const listEl = document.getElementById('questHistoryList');
+  if (!history.length) {
+    listEl.innerHTML = '<div class="no-quests">// no archived quests yet<br>run a quest then hit<br>archive to save it here</div>';
+    return;
+  }
+  listEl.innerHTML = history.map(q => {
+    const total = q.amtA + q.amtB;
+    const pA = total > 0 ? Math.round((q.amtA/total)*100) : 50;
+    const pB = 100 - pA;
+    const winColor = q.amtA >= q.amtB ? q.colorA : q.colorB;
+    return `
+    <div class="quest-card">
+      <div class="quest-card-top">
+        <div class="quest-card-title">${q.title}</div>
+        <div class="quest-card-date">${fmtDate(q.endedAt)}</div>
+      </div>
+      <div class="quest-winner-tag" style="background:${winColor}22;color:${winColor};">
+        ${q.winner.toUpperCase()} WON
+      </div>
+      <div class="quest-bar-mini">
+        <div style="width:${pA}%;background:${q.colorA};"></div>
+        <div style="flex:1;background:${q.colorB};"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:4px;">
+        <span style="color:${q.colorA};">${q.nameA} ${fmt(q.amtA)} (${pA}%)</span>
+        <span style="color:${q.colorB};">${q.nameB} ${fmt(q.amtB)} (${pB}%)</span>
+      </div>
+      <div class="quest-metrics">
+        <div class="quest-metric">
+          <div class="quest-metric-label">// TOTAL RAISED</div>
+          <div class="quest-metric-val">${fmt(q.totalAmt)}</div>
+        </div>
+        <div class="quest-metric">
+          <div class="quest-metric-label">// VOTERS</div>
+          <div class="quest-metric-val">${q.totalVoters}</div>
+        </div>
+        <div class="quest-metric">
+          <div class="quest-metric-label">// FLIPS</div>
+          <div class="quest-metric-val">${q.flipCount}</div>
+        </div>
+        <div class="quest-metric">
+          <div class="quest-metric-label">// AVG VOTE</div>
+          <div class="quest-metric-val">${fmt(q.avgVote)}</div>
+        </div>
+        <div class="quest-metric">
+          <div class="quest-metric-label">// BIGGEST</div>
+          <div class="quest-metric-val">${fmt(q.biggestVote)}</div>
+        </div>
+        <div class="quest-metric">
+          <div class="quest-metric-label">// DURATION</div>
+          <div class="quest-metric-val">${fmtDuration(q.startedAt, q.endedAt)}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCharts() {
+  const history = (state.history || []).slice().reverse(); // oldest first for charts
+  if (!history.length) {
+    ['chartTotal','chartVoters','chartFlips','chartAvg'].forEach(id => {
+      document.getElementById(id).innerHTML = '<div class="chart-empty">// archive quests to see charts</div>';
+    });
+    return;
+  }
+
+  function makeChart(containerId, valFnA, valFnB, fmtFn) {
+    const el = document.getElementById(containerId);
+    const maxVal = Math.max(...history.map(q => (valFnA(q)||0) + (valFnB ? (valFnB(q)||0) : 0)), 1);
+    el.innerHTML = '<div class="chart-inner">' +
+      history.map(q => {
+        const vA = valFnA(q) || 0;
+        const vB = valFnB ? (valFnB(q) || 0) : 0;
+        const hA = Math.round((vA / maxVal) * 100);
+        const hB = valFnB ? Math.round((vB / maxVal) * 100) : 0;
+        const short = q.title.length > 12 ? q.title.substring(0,10)+'…' : q.title;
+        const displayVal = valFnB ? fmtFn(vA + vB) : fmtFn(vA);
+        return `<div class="chart-group">
+          <div class="chart-bval">${displayVal}</div>
+          <div class="chart-bars">
+            <div class="chart-bar" style="height:${hA}px;background:${q.colorA};"></div>
+            ${valFnB ? `<div class="chart-bar" style="height:${hB}px;background:${q.colorB};"></div>` : ''}
+          </div>
+          <div class="chart-blabel">${short}</div>
+        </div>`;
+      }).join('') +
+    '</div>';
+  }
+
+  makeChart('chartTotal',  q => q.amtA, q => q.amtB, v => fmt(v));
+  makeChart('chartVoters', q => q.votersA, q => q.votersB, v => v);
+  makeChart('chartFlips',  q => q.flipCount, null, v => v);
+  makeChart('chartAvg',    q => q.avgVote, null, v => fmt(v));
+}
+
+
+// init history if not present
+if (!state.history) state.history = [];
+if (!state.startedAt && (state.amtA > 0 || state.amtB > 0)) state.startedAt = new Date().toISOString();
+
+load();
+applyTheme();
+renderStats();
+</script>
+</body>
+</html>
