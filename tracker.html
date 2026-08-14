@@ -585,7 +585,7 @@
 <!-- TABS -->
 <div class="tabs">
   <button class="tab active" onclick="switchTab('live')">// LIVE</button>
-  <button class="tab" onclick="switchTab('admin')">// ADMIN</button>
+  <button class="tab" id="adminTab" onclick="switchTab('admin')" style="display:none;">// ADMIN</button>
   <button class="tab" onclick="switchTab('stats')">// STATS</button>
 </div>
 
@@ -790,6 +790,7 @@
   <div class="admin-section">
     <div class="admin-section-label">// 04 — DANGER ZONE</div>
     <button class="btn-danger" onclick="confirmReset()">// RESET ALL VOTE COUNTS TO ZERO</button>
+    <button class="btn-danger" onclick="archiveCurrentQuest()" style="margin-top:10px;">// ARCHIVE QUEST &amp; RESET</button>
   </div>
 
 </div>
@@ -809,9 +810,7 @@
   </div>
   <div class="stats-view active" id="sview-list">
     <div id="questHistoryList"></div>
-    <div style="padding:16px;">
-      <button class="btn-secondary" onclick="archiveCurrentQuest()" style="margin-bottom:0;">// ARCHIVE CURRENT QUEST &amp; RESET</button>
-    </div>
+
   </div>
   <div class="stats-view" id="sview-charts">
     <div style="padding:16px;">
@@ -1361,6 +1360,11 @@ if (!state.startedAt && (state.amtA > 0 || state.amtB > 0)) state.startedAt = ne
 load();
 applyTheme();
 renderStats();
+
+// Show admin tab only if URL contains ?admin=true
+if (window.location.search.includes('admin=true')) {
+  document.getElementById('adminTab').style.display = '';
+}
 </script>
 </body>
 </html>
