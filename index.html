@@ -18,6 +18,10 @@
     -webkit-font-smoothing: antialiased;
     overflow: hidden;
   }
+  @supports (height: 100dvh) {
+    html, body { height: 100dvh; }
+    .page { height: 100dvh; }
+  }
 
   /* grid texture */
   .grid-bg {
@@ -75,24 +79,24 @@
   .hero-eyebrow {
     font-size: 10px; letter-spacing: 0.2em;
     color: #52b788;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
   .hero-title {
     font-family: 'Space Mono', monospace;
-    font-size: clamp(44px, 13vw, 96px);
+    font-size: clamp(38px, 11vw, 96px);
     font-weight: 700;
     color: #ffffff;
     letter-spacing: -3px;
     line-height: 0.92;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
   }
   .hero-title .slash { color: #2d6a4f; }
 
   .split-bar {
     display: flex; height: 4px; width: 160px;
     border-radius: 2px; overflow: hidden;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
   }
   .split-a { flex: 1; background: #52b788; }
   .split-b { flex: 1; background: #D4A017; }
@@ -101,7 +105,7 @@
     font-size: 13px;
     color: #666666;
     line-height: 1.8;
-    margin-bottom: 24px;
+    margin-bottom: 18px;
   }
 
   /* ── CTA BUTTON — green bg, dark text ── */
@@ -122,6 +126,8 @@
   /* ── BOTTOM ── */
   .bottom-row {
     display: flex; justify-content: space-between; align-items: flex-end;
+    flex-shrink: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   .tagline {
@@ -137,9 +143,9 @@
 
   .steps { text-align: right; flex-shrink: 0; }
   .step-line {
-    font-size: 10px; letter-spacing: 0.06em;
+    font-size: 9px; letter-spacing: 0.06em;
     color: #444444;
-    line-height: 2.2;
+    line-height: 1.9;
   }
   .step-num { color: #2d6a4f; margin-right: 8px; }
 </style>

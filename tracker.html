@@ -96,7 +96,7 @@
 
   /* ─── QUEST BAR ─── */
   .quest-bar {
-    padding: 12px 16px;
+    padding: 14px 16px;
     border-bottom: 0.5px solid var(--border);
   }
   .quest-prefix { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; }
@@ -598,7 +598,7 @@
   </div>
 
   <div class="quest-bar">
-    <div class="quest-prefix">// QUEST</div>
+    <div class="quest-prefix">// QUEST <span id="questNum" style="color:var(--green3,#52B788);">#001</span></div>
     <div class="quest-title" id="questTitle">The Cybertruck — love it or hate it?</div>
   </div>
 
@@ -1003,6 +1003,8 @@ function launchQuest() {
   state.colorA = document.getElementById('colorA').value;
   state.colorB = document.getElementById('colorB').value;
   state.startedAt = new Date().toISOString();
+  state.questNum = (state.questNum || 1);
+  document.getElementById('questNum').textContent = '#' + String(state.questNum).padStart(3,'0');
   save();
   applyTheme();
   showToast('// QUEST LAUNCHED');
@@ -1210,6 +1212,8 @@ function archiveCurrentQuest() {
   state.votersA = 0; state.votersB = 0;
   state.feed = [];
   state.startedAt = null;
+  state.questNum = (state.questNum || 1) + 1;
+  document.getElementById('questNum').textContent = '#' + String(state.questNum).padStart(3,'0');
   save();
   syncAdminFields();
   renderBoard();
@@ -1356,6 +1360,19 @@ function renderCharts() {
 // init history if not present
 if (!state.history) state.history = [];
 if (!state.startedAt && (state.amtA > 0 || state.amtB > 0)) state.startedAt = new Date().toISOString();
+
+// Reset color defaults if still on old blue/orange scheme
+try {
+  const s = localStorage.getItem('sq_state');
+  if (s) {
+    const parsed = JSON.parse(s);
+    if (parsed.colorA === '#38BDF8' || parsed.colorA === '#38BDF8'.toLowerCase()) {
+      parsed.colorA = '#52B788';
+      parsed.colorB = '#D4A017';
+      localStorage.setItem('sq_state', JSON.stringify(parsed));
+    }
+  }
+} catch(e) {}
 
 load();
 applyTheme();
