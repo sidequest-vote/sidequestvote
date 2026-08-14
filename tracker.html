@@ -570,8 +570,8 @@
 </head>
 <body>
 
-<!-- LOCK SCREEN -->
-<div class="lock-screen" id="lockScreen">
+<!-- LOCK SCREEN — only shown when accessing admin -->
+<div class="lock-screen" id="lockScreen" style="display:none;">
   <div class="lock-logo">SIDE<span>/</span>QUEST</div>
   <div class="lock-label">// ADMIN PASSWORD</div>
   <input class="lock-input" type="password" id="lockInput" placeholder="••••••" maxlength="20">
@@ -862,7 +862,7 @@
 </style>
 
 <script>
-const ADMIN_PASS = 'Sid3Quest!1';
+const ADMIN_PASS = 'sidequest1';
 
 let state = {
   title: 'The Cybertruck — love it or hate it?',
@@ -889,6 +889,8 @@ function checkLock() {
   const val = document.getElementById('lockInput').value;
   if (val === ADMIN_PASS) {
     document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('lockInput').value = '';
+    switchTab('admin');
   } else {
     document.getElementById('lockError').style.display = 'block';
     document.getElementById('lockInput').value = '';
@@ -900,6 +902,10 @@ document.getElementById('lockInput').addEventListener('keydown', e => {
 });
 
 function switchTab(t) {
+  if (t === 'admin') {
+    document.getElementById('lockScreen').style.display = 'flex';
+    return;
+  }
   document.querySelectorAll('.tab').forEach((el, i) => {
     el.classList.toggle('active', (i===0&&t==='live')||(i===1&&t==='admin')||(i===2&&t==='stats'));
   });
