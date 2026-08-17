@@ -570,14 +570,7 @@
 </head>
 <body>
 
-<!-- LOCK SCREEN — only shown when accessing admin -->
-<div class="lock-screen" id="lockScreen" style="display:none;">
-  <div class="lock-logo">SIDE<span>/</span>QUEST</div>
-  <div class="lock-label">// ADMIN PASSWORD</div>
-  <input class="lock-input" type="password" id="lockInput" placeholder="••••••" maxlength="20">
-  <button class="lock-btn" onclick="checkLock()">// ENTER ADMIN</button>
-  <div class="lock-error" id="lockError">// incorrect password</div>
-</div>
+<!-- lock screen removed - using prompt instead -->
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
@@ -884,26 +877,15 @@ function load() {
   } catch(e){}
 }
 
-function checkLock() {
-  const val = document.getElementById('lockInput').value;
-  if (val === ADMIN_PASS) {
-    document.getElementById('lockScreen').style.display = 'none';
-    document.getElementById('lockInput').value = '';
-    switchTab('admin');
-  } else {
-    document.getElementById('lockError').style.display = 'block';
-    document.getElementById('lockInput').value = '';
-  }
-}
-
-document.getElementById('lockInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') checkLock();
-});
+// password check handled in switchTab
 
 function switchTab(t) {
   if (t === 'admin') {
-    document.getElementById('lockScreen').style.display = 'flex';
-    return;
+    var pw = prompt('Enter admin password:');
+    if (pw !== 'SideQuest2025') {
+      alert('Incorrect password');
+      return;
+    }
   }
   document.querySelectorAll('.tab').forEach((el, i) => {
     el.classList.toggle('active', (i===0&&t==='live')||(i===1&&t==='admin')||(i===2&&t==='stats'));
@@ -1378,9 +1360,20 @@ load();
 applyTheme();
 renderStats();
 
-// Show admin tab only if URL contains ?admin=true
+// Show admin tab if URL contains ?admin=true
 if (window.location.search.includes('admin=true')) {
   document.getElementById('adminTab').style.display = '';
+  var pw = prompt('Enter admin password:');
+  if (pw === 'SideQuest2025') {
+    document.querySelectorAll('.tab').forEach((el, i) => {
+      el.classList.toggle('active', i === 1);
+    });
+    document.getElementById('view-live').classList.remove('active');
+    document.getElementById('view-admin').classList.add('active');
+    document.getElementById('view-stats').classList.remove('active');
+  } else {
+    alert('Incorrect password');
+  }
 }
 </script>
 </body>
