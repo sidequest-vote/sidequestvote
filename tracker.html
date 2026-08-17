@@ -646,18 +646,22 @@
 
   <div class="qr-section">
     <div class="qr-side">
-      <div class="qr-box" id="qrBoxA">
-        <div class="qr-placeholder-text">QR CODE<br>SIDE A<br>// set in admin</div>
-      </div>
+      <a id="qrLinkA" href="https://venmo.com/SideQuest-A" target="_blank" style="text-decoration:none;">
+        <div class="qr-box" id="qrBoxA">
+          <div class="qr-placeholder-text">QR CODE<br>SIDE A<br>// set in admin</div>
+        </div>
+      </a>
       <div class="qr-label" id="qrLabelA" style="color:var(--ca);">LOVE IT</div>
-      <div class="qr-sub">Scan to vote</div>
+      <div class="qr-sub">Tap or scan to vote</div>
     </div>
     <div class="qr-side">
-      <div class="qr-box" id="qrBoxB">
-        <div class="qr-placeholder-text">QR CODE<br>SIDE B<br>// set in admin</div>
-      </div>
+      <a id="qrLinkB" href="https://venmo.com/SideQuest-B" target="_blank" style="text-decoration:none;">
+        <div class="qr-box" id="qrBoxB">
+          <div class="qr-placeholder-text">QR CODE<br>SIDE B<br>// set in admin</div>
+        </div>
+      </a>
       <div class="qr-label" id="qrLabelB" style="color:var(--cb);">HATE IT</div>
-      <div class="qr-sub">Scan to vote</div>
+      <div class="qr-sub">Tap or scan to vote</div>
     </div>
   </div>
 
@@ -765,7 +769,15 @@
 
   <div class="admin-section">
     <div class="admin-section-label">// 03 — VENMO QR CODES</div>
-    <p style="font-size:11px;color:var(--sub);line-height:1.7;margin-bottom:14px;">Upload the QR code images for each Venmo account. These appear on the live board for people to scan.</p>
+    <p style="font-size:11px;color:var(--sub);line-height:1.7;margin-bottom:14px;">Upload QR images and set Venmo handles for tap-to-pay links.</p>
+    <div class="field">
+      <label class="field-label" style="color:var(--ca);">// SIDE A VENMO HANDLE</label>
+      <input type="text" id="venmoHandleA" placeholder="@SideQuestA" value="@SideQuestA" oninput="updateVenmoLinks()">
+    </div>
+    <div class="field">
+      <label class="field-label" style="color:var(--cb);">// SIDE B VENMO HANDLE</label>
+      <input type="text" id="venmoHandleB" placeholder="@SideQuestB" value="@SideQuestB" oninput="updateVenmoLinks()">
+    </div>
     <div class="two-col" style="margin-bottom:14px;">
       <div class="field">
         <label class="field-label" id="qrUploadLabelA" style="color:var(--ca);">// SIDE A QR</label>
@@ -778,6 +790,7 @@
         <button class="btn-secondary" onclick="document.getElementById('qrFileB').click()" style="margin-bottom:0;">// UPLOAD QR B</button>
       </div>
     </div>
+    <button class="btn-primary" onclick="saveVenmoHandles()" style="margin-bottom:0;">// SAVE VENMO HANDLES</button>
   </div>
 
   <div class="admin-section">
@@ -938,6 +951,11 @@ function applyTheme() {
 
   syncAdminFields();
   renderBoard();
+  // Restore venmo links
+  if (state.venmoA) document.getElementById('qrLinkA').href = `https://venmo.com/${state.venmoA}`;
+  if (state.venmoB) document.getElementById('qrLinkB').href = `https://venmo.com/${state.venmoB}`;
+  if (state.venmoA) document.getElementById('venmoHandleA').value = '@' + state.venmoA;
+  if (state.venmoB) document.getElementById('venmoHandleB').value = '@' + state.venmoB;
 }
 
 function syncAdminFields() {
@@ -1097,6 +1115,22 @@ function renderBoard() {
 
   renderFeed();
   updateTicker();
+}
+
+function updateVenmoLinks() {
+  const handleA = document.getElementById('venmoHandleA').value.replace('@','');
+  const handleB = document.getElementById('venmoHandleB').value.replace('@','');
+  document.getElementById('qrLinkA').href = `https://venmo.com/${handleA}`;
+  document.getElementById('qrLinkB').href = `https://venmo.com/${handleB}`;
+}
+
+function saveVenmoHandles() {
+  state.venmoA = document.getElementById('venmoHandleA').value.replace('@','');
+  state.venmoB = document.getElementById('venmoHandleB').value.replace('@','');
+  document.getElementById('qrLinkA').href = `https://venmo.com/${state.venmoA}`;
+  document.getElementById('qrLinkB').href = `https://venmo.com/${state.venmoB}`;
+  save();
+  showToast('// VENMO HANDLES SAVED');
 }
 
 function uploadQR(side) {
