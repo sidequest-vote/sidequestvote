@@ -881,11 +881,7 @@ function load() {
 
 function switchTab(t) {
   if (t === 'admin') {
-    var pw = prompt('Enter admin password:');
-    if (pw !== 'SideQuest2025') {
-      alert('Incorrect password');
-      return;
-    }
+    // already unlocked via URL
   }
   document.querySelectorAll('.tab').forEach((el, i) => {
     el.classList.toggle('active', (i===0&&t==='live')||(i===1&&t==='admin')||(i===2&&t==='stats'));
@@ -1356,24 +1352,27 @@ try {
   }
 } catch(e) {}
 
+// Check admin URL FIRST before anything else
+var urlParams = new URLSearchParams(window.location.search);
+var isAdmin = urlParams.get('admin') === 'SideQuest2025';
+
+if (isAdmin) {
+  document.getElementById('adminTab').style.display = '';
+}
+
 load();
 applyTheme();
 renderStats();
 
-// Show admin tab if URL contains ?admin=true
-if (window.location.search.includes('admin=true')) {
-  document.getElementById('adminTab').style.display = '';
-  var pw = prompt('Enter admin password:');
-  if (pw === 'SideQuest2025') {
-    document.querySelectorAll('.tab').forEach((el, i) => {
-      el.classList.toggle('active', i === 1);
-    });
-    document.getElementById('view-live').classList.remove('active');
-    document.getElementById('view-admin').classList.add('active');
-    document.getElementById('view-stats').classList.remove('active');
-  } else {
-    alert('Incorrect password');
-  }
+// Now activate admin view if URL token is correct
+if (isAdmin) {
+  document.querySelectorAll('.tab').forEach((el, i) => {
+    el.classList.toggle('active', i === 1);
+  });
+  document.getElementById('view-live').classList.remove('active');
+  document.getElementById('view-admin').classList.add('active');
+  document.getElementById('view-stats').classList.remove('active');
+  syncAdminFields();
 }
 </script>
 </body>
