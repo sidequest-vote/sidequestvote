@@ -1,0 +1,12 @@
+{
+  "questNum": 1,
+  "title": "The Cybertruck: love it or hate it?",
+  "status": "pre-launch",
+  "sideA": { "label": "Love it", "color": "#52B788", "link": "/a", "venmoNote": "SIDE-A_Q001", "total": 0, "voters": 0 },
+  "sideB": { "label": "Hate it", "color": "#D4A017", "link": "/b", "venmoNote": "SIDE-B_Q001", "total": 0, "voters": 0 },
+  "flips": 0,
+  "feed": [],
+  "startedAt": null,
+  "updatedAt": "2026-10-22T19:58:31Z",
+  "history": []
+}

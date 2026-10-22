@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    { "source": "/a", "destination": "https://venmo.com/SideQuestVote?txn=pay&note=SIDE-A_Q001", "statusCode": 302 },
+    { "source": "/b", "destination": "https://venmo.com/SideQuestVote?txn=pay&note=SIDE-B_Q001", "statusCode": 302 }
+  ],
+  "headers": [
+    { "source": "/data/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] }
+  ]
+}
