@@ -33,6 +33,12 @@
   .live-pill { display: flex; align-items: center; gap: 7px; font-size: 12px; letter-spacing: 0.08em; color: var(--sub); text-align: right; }
   .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); flex-shrink: 0; }
   .live-dot.fresh { background: var(--brand3); animation: pulse 1.4s infinite; }
+  .live-text { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+  .live-sub { font-size: 10px; letter-spacing: 0.08em; color: var(--muted); }
+  .battle-side { transition: background-color 0.6s; }
+  .bump { animation: bump 0.9s ease-out; }
+  @keyframes bump { 0%{transform:scale(1)} 25%{transform:scale(1.07)} 100%{transform:scale(1)} }
+  @media (prefers-reduced-motion: reduce) { .bump, .live-dot.fresh { animation: none; } .bar-a { transition: none !important; } }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
 
   .quest-bar { padding: 16px; border-bottom: 1px solid var(--border); }
@@ -51,7 +57,7 @@
 
   .bar-section { padding: 14px 16px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
   .bar-track { height: 10px; background: var(--bg2); border-radius: 5px; overflow: hidden; display: flex; }
-  .bar-a { background: var(--ca); transition: width 0.8s cubic-bezier(.4,0,.2,1); }
+  .bar-a { background: var(--ca); transition: width 0.9s cubic-bezier(.4,0,.2,1); }
   .bar-b { background: var(--cb); flex: 1; }
   .bar-meta { display: flex; justify-content: space-between; margin-top: 8px; font-size: 13px; color: var(--sub); }
 
@@ -108,7 +114,7 @@
 <div class="view active" id="view-live">
   <div class="topbar">
     <a class="logo" href="/">SIDE<span>/</span>QUEST</a>
-    <div class="live-pill"><div class="live-dot" id="liveDot"></div><span id="updatedText">LOADING…</span></div>
+    <div class="live-pill"><div class="live-dot" id="liveDot"></div><div class="live-text"><span id="updatedText">LIVE · CONNECTING…</span><span class="live-sub" id="dataText"></span></div></div>
   </div>
 
   <div class="quest-bar">
@@ -168,13 +174,20 @@
 </div>
 <script>
 const DATA_URL = '/data/quest.json';
-const REFRESH_MS = 30000;
-let data = null;
+const POLL_MS = 20000;
+const STALE_MS = 75000;      // no good fetch for this long -> show OFFLINE
+const ANIM_MS = 900;
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+let data = null, lastOk = 0, pollTimer = null, inflight = false;
+const shown = {};            // currently displayed numeric values, keyed by element id
+const last = {};             // last rendered html/text, to avoid needless DOM rebuilds
 
 const $ = id => document.getElementById(id);
 const fmt = n => '$' + Math.round(Number(n) || 0).toLocaleString('en-US');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const okColor = c => /^#[0-9a-fA-F]{6}$/.test(c || '') ? c : '#888888';
+const setHTML = (id, h) => { if (last[id] !== h) { last[id] = h; $(id).innerHTML = h; } };
+const setText = (id, t) => { if (last[id] !== t) { last[id] = t; $(id).textContent = t; } };
 
 document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', () => {
   const t = btn.dataset.tab;
@@ -183,22 +196,42 @@ document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', (
   $('view-stats').classList.toggle('active', t === 'stats');
 }));
 
-function ago(iso) {
-  const ms = Date.now() - new Date(iso).getTime();
-  if (!iso || isNaN(ms)) return null;
-  const m = Math.floor(ms / 60000);
-  if (m < 1) return { text: 'UPDATED JUST NOW', min: 0 };
-  if (m < 60) return { text: `UPDATED ${m} MIN AGO`, min: m };
+// Animate a number shown in element `id` to `to`; `f` formats it.
+function tween(id, to, f) {
+  const el = $(id), from = shown[id];
+  shown[id] = to;
+  if (from === undefined || REDUCED || from === to) { el.textContent = f(to); return from !== undefined && from !== to; }
+  const t0 = performance.now();
+  const step = now => {
+    if (shown[id] !== to) return;                       // superseded by a newer update
+    const k = Math.min(1, (now - t0) / ANIM_MS), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = f(from + (to - from) * e);
+    if (k < 1) requestAnimationFrame(step); else el.textContent = f(to);
+  };
+  requestAnimationFrame(step);
+  return true;
+}
+function bump(card) { card.classList.remove('bump'); void card.offsetWidth; card.classList.add('bump'); }
+
+function agoShort(ms) {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  if (s < 60) return s + 'S';
+  const m = Math.floor(s / 60);
+  if (m < 60) return m + 'M';
   const h = Math.floor(m / 60);
-  if (h < 48) return { text: `UPDATED ${h} HR AGO`, min: m };
-  return { text: 'UPDATED ' + new Date(iso).toLocaleDateString('en-US', {month:'short', day:'numeric'}).toUpperCase(), min: m };
+  return h < 48 ? h + 'H' : Math.floor(h / 24) + 'D';
 }
 
-function renderUpdated() {
-  if (!data) return;
-  const a = ago(data.updatedAt);
-  $('updatedText').textContent = a ? a.text : 'NOT YET UPDATED';
-  $('liveDot').classList.toggle('fresh', !!a && a.min < 15);
+// Header indicator: seconds since the board last synced; sub-line: age of the data itself.
+function renderIndicator() {
+  const now = Date.now();
+  if (!lastOk) return;
+  const stale = now - lastOk > STALE_MS;
+  setText('updatedText', stale ? 'OFFLINE · LAST SYNC ' + agoShort(now - lastOk) + ' AGO' : 'LIVE · UPDATED ' + agoShort(now - lastOk) + ' AGO');
+  $('liveDot').classList.toggle('fresh', !stale);
+  const lv = data && data.lastVoteAt ? new Date(data.lastVoteAt).getTime() : NaN;
+  const up = data && data.updatedAt ? new Date(data.updatedAt).getTime() : NaN;
+  setText('dataText', !isNaN(lv) ? 'LAST VOTE ' + agoShort(now - lv) + ' AGO' : !isNaN(up) ? 'BOARD DATA ' + agoShort(now - up) + ' OLD' : '');
 }
 
 function render() {
@@ -206,11 +239,11 @@ function render() {
   const cA = okColor(A.color), cB = okColor(B.color);
   document.documentElement.style.setProperty('--ca', cA);
   document.documentElement.style.setProperty('--cb', cB);
-  $('questNum').textContent = '#' + String(data.questNum || 1).padStart(3, '0');
-  $('questStatus').textContent = data.status === 'pre-launch' ? '// PRE-LAUNCH' : data.status === 'closed' ? '// CLOSED' : '';
-  $('questTitle').textContent = data.title;
-  $('nameA').textContent = A.label; $('nameB').textContent = B.label;
-  $('payLabelA').textContent = A.label.toUpperCase(); $('payLabelB').textContent = B.label.toUpperCase();
+  setText('questNum', '#' + String(data.questNum || 1).padStart(3, '0'));
+  setText('questStatus', data.status === 'pre-launch' ? '// PRE-LAUNCH' : data.status === 'closed' ? '// CLOSED' : '');
+  setText('questTitle', data.title);
+  setText('nameA', A.label); setText('nameB', B.label);
+  setText('payLabelA', A.label.toUpperCase()); setText('payLabelB', B.label.toUpperCase());
   $('payA').href = A.link || '/a'; $('payB').href = B.link || '/b';
   [['A', cA], ['B', cB]].forEach(([k, c]) => {
     $('tag' + k).style.color = c; $('amt' + k).style.color = c;
@@ -220,79 +253,90 @@ function render() {
   });
 
   const amtA = Number(A.total) || 0, amtB = Number(B.total) || 0, total = amtA + amtB;
-  $('amtA').textContent = fmt(amtA); $('amtB').textContent = fmt(amtB);
   const vA = Number(A.voters) || 0, vB = Number(B.voters) || 0;
-  $('votersA').textContent = vA + ' VOTER' + (vA !== 1 ? 'S' : '');
-  $('votersB').textContent = vB + ' VOTER' + (vB !== 1 ? 'S' : '');
+  const voterFmt = n => { n = Math.round(n); return n + ' VOTER' + (n !== 1 ? 'S' : ''); };
+  if (tween('amtA', amtA, fmt) | tween('votersA', vA, voterFmt)) bump($('sideACard'));
+  if (tween('amtB', amtB, fmt) | tween('votersB', vB, voterFmt)) bump($('sideBCard'));
   const flips = Number(data.flips) || 0;
-  $('flipCount').textContent = flips ? flips + ' FLIP' + (flips !== 1 ? 'S' : '') : '';
+  setText('flipCount', flips ? flips + ' FLIP' + (flips !== 1 ? 'S' : '') : '');
 
   $('winA').style.display = 'none'; $('winB').style.display = 'none';
+  const pA = total ? Math.round(amtA / total * 100) : 50;
+  $('barA').style.width = pA + '%';
+  tween('pctA', pA, n => Math.round(n) + '%'); tween('pctB', 100 - pA, n => Math.round(n) + '%');
   if (total === 0) {
-    $('barA').style.width = '50%'; $('pctA').textContent = '50%'; $('pctB').textContent = '50%';
-    $('statusLine').textContent = data.status === 'pre-launch' ? '// launching soon. first dollar sets the board' : '// awaiting first vote';
+    setText('statusLine', data.status === 'pre-launch' ? '// launching soon. first dollar sets the board' : '// awaiting first vote');
+  } else if (amtA !== amtB) {
+    const lead = amtA > amtB ? A : B, c = amtA > amtB ? cA : cB, diff = Math.abs(amtA - amtB);
+    $(amtA > amtB ? 'winA' : 'winB').style.display = 'inline-block';
+    setHTML('statusLine', `// <span style="color:${c};">${esc(lead.label.toUpperCase())}</span> leading by ${fmt(diff)}. flip costs ${fmt(diff + 1)}`);
   } else {
-    const pA = Math.round(amtA / total * 100);
-    $('barA').style.width = pA + '%'; $('pctA').textContent = pA + '%'; $('pctB').textContent = (100 - pA) + '%';
-    if (amtA !== amtB) {
-      const lead = amtA > amtB ? A : B, c = amtA > amtB ? cA : cB, diff = Math.abs(amtA - amtB);
-      $(amtA > amtB ? 'winA' : 'winB').style.display = 'inline-block';
-      $('statusLine').innerHTML = `// <span style="color:${c};">${esc(lead.label.toUpperCase())}</span> leading by ${fmt(diff)}. flip costs ${fmt(diff + 1)}`;
-    } else {
-      $('statusLine').textContent = '// dead even. next dollar decides';
-    }
+    setText('statusLine', '// dead even. next dollar decides');
   }
 
+  // Public feed: side, optional amount, optional first-name + last-initial ("who"), time. No handles.
   const feed = Array.isArray(data.feed) ? data.feed.slice(0, 8) : [];
-  $('feedList').innerHTML = feed.length ? feed.map(f => {
+  setHTML('feedList', feed.length ? feed.map(f => {
     const s = f.side === 'b' ? B : A, c = f.side === 'b' ? cB : cA;
     const t = f.at ? new Date(f.at).toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'}) : '';
+    const who = f.who ? `<span class="feed-time" style="margin-left:0;">${esc(f.who)}</span>` : '';
+    const amt = f.amount != null ? `<span class="feed-amt">${fmt(f.amount)}</span>` : '<span class="feed-amt"></span>';
     return `<div class="feed-item" style="background:${c}12;"><div class="feed-dot" style="background:${c};"></div>
-      <span class="feed-side" style="color:${c};">${esc(s.label.toUpperCase())}</span>${f.flip ? '<span class="feed-flip">FLIP</span>' : ''}
-      <span class="feed-amt">${fmt(f.amount)}</span><span class="feed-time">${esc(t)}</span></div>`;
-  }).join('') : '<div class="feed-empty">// no votes yet</div>';
+      <span class="feed-side" style="color:${c};">${esc(s.label.toUpperCase())}</span>${f.flip ? '<span class="feed-flip">FLIP</span>' : ''}${who}
+      ${amt}<span class="feed-time">${esc(t)}</span></div>`;
+  }).join('') : '<div class="feed-empty">// no votes yet</div>');
 
   const lead = Math.abs(amtA - amtB), w = amtA > amtB ? A : amtB > amtA ? B : null;
   let h = `<span class="tick-item" style="color:${cA};">${esc(A.label.toUpperCase())} ${fmt(amtA)}<span class="tick-sep">|</span></span>`
         + `<span class="tick-item" style="color:${cB};">${esc(B.label.toUpperCase())} ${fmt(amtB)}<span class="tick-sep">|</span></span>`;
   if (w) h += `<span class="tick-item" style="color:var(--sub);">LEAD ${esc(w.label.toUpperCase())} +${fmt(lead)}<span class="tick-sep">|</span></span>`;
   h += `<span class="tick-item" style="color:var(--muted);">SIDE/QUEST // EVERY OPINION HAS A PRICE<span class="tick-sep">|</span></span>`;
-  $('tickerInner').innerHTML = h + h;
+  if (last.tickerInner !== h) setHTML('tickerInner', h + h);   // only rebuild when changed so the scroll doesn't restart
 
-  renderUpdated();
   renderStats();
+  renderIndicator();
 }
 
 function renderStats() {
   const hist = Array.isArray(data.history) ? data.history : [];
   const sum = k => hist.reduce((s, q) => s + (Number(q[k]) || 0), 0);
-  $('statsSummary').innerHTML = `
+  setHTML('statsSummary', `
     <div class="summary-card"><div class="summary-label">// RAISED</div><div class="summary-val">${fmt(sum('totalAmt'))}</div><div class="summary-sub">${hist.length} quest${hist.length !== 1 ? 's' : ''}</div></div>
     <div class="summary-card"><div class="summary-label">// VOTERS</div><div class="summary-val">${sum('totalVoters').toLocaleString()}</div><div class="summary-sub">all time</div></div>
-    <div class="summary-card"><div class="summary-label">// FLIPS</div><div class="summary-val">${sum('flips')}</div><div class="summary-sub">lead changes</div></div>`;
-  $('questHistoryList').innerHTML = hist.length ? hist.map(q => {
+    <div class="summary-card"><div class="summary-label">// FLIPS</div><div class="summary-val">${sum('flips')}</div><div class="summary-sub">lead changes</div></div>`);
+  setHTML('questHistoryList', hist.length ? hist.map(q => {
     const a = Number(q.amtA) || 0, b = Number(q.amtB) || 0, t = a + b, pA = t ? Math.round(a / t * 100) : 50;
     const cA = okColor(q.colorA), cB = okColor(q.colorB);
     return `<div class="quest-card"><div class="quest-card-title">#${String(q.questNum || '').padStart(3,'0')} ${esc(q.title)}</div>
       <div class="quest-bar-mini"><div style="width:${pA}%;background:${cA};"></div><div style="flex:1;background:${cB};"></div></div>
       <div class="quest-card-meta"><span style="color:${cA};">${esc(q.nameA)} ${fmt(a)}</span><span style="color:${cB};">${esc(q.nameB)} ${fmt(b)}</span></div></div>`;
-  }).join('') : '<div class="no-quests">// no finished quests yet<br>results land here when a quest closes</div>';
+  }).join('') : '<div class="no-quests">// no finished quests yet<br>results land here when a quest closes</div>');
 }
 
 async function load() {
+  if (inflight) return;
+  inflight = true;
   try {
     const r = await fetch(DATA_URL + '?t=' + Date.now(), { cache: 'no-store' });
     if (!r.ok) throw new Error(r.status);
-    data = await r.json();
+    const j = await r.json();
+    if (!j || !j.sideA || !j.sideB) throw new Error('bad shape');
+    data = j; lastOk = Date.now();
     render();
-  } catch (e) {
-    $('updatedText').textContent = 'OFFLINE';
-    $('liveDot').classList.remove('fresh');
-  }
+  } catch (e) { /* fail silently; keep showing last good data */ }
+  finally { inflight = false; }
 }
+
+function startPolling() { stopPolling(); pollTimer = setInterval(load, POLL_MS); }
+function stopPolling() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) stopPolling();
+  else { load(); startPolling(); renderIndicator(); }
+});
+
+setInterval(() => { if (!document.hidden) renderIndicator(); }, 1000);
 load();
-setInterval(load, REFRESH_MS);
-setInterval(renderUpdated, 15000);
+if (!document.hidden) startPolling();
 </script>
 </body>
 </html>
