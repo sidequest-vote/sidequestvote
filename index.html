@@ -6,53 +6,44 @@
 <meta name="theme-color" content="#0A0A0A">
 <meta name="color-scheme" content="dark">
 <title>SIDE/QUEST — Every opinion has a price</title>
-<meta name="description" content="The Cybertruck: love it or hate it? Pick a side and pay any amount on Venmo. Watch the live board.">
+<meta name="description" content="A rolling opinion poll on a Cybertruck. Two sides. Back your opinion with real money. The board is live and anyone can flip it.">
 <link rel="canonical" href="https://www.sidequest.vote/">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="SIDE/QUEST">
 <meta property="og:url" content="https://www.sidequest.vote/">
-<meta property="og:title" content="SIDE/QUEST — The Cybertruck: love it or hate it?">
-<meta property="og:description" content="Pick a side. Pay any amount. Every opinion has a price.">
+<meta property="og:title" content="SIDE/QUEST — Pick a side">
+<meta property="og:description" content="The world's first rolling opinion poll. Back your opinion with real money. Every opinion has a price.">
 <meta property="og:image" content="https://www.sidequest.vote/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="SIDE/QUEST. The Cybertruck: love it or hate it? Every opinion has a price.">
+<meta property="og:image:alt" content="SIDE/QUEST. Pick a side. Every opinion has a price.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="SIDE/QUEST — The Cybertruck: love it or hate it?">
-<meta name="twitter:description" content="Pick a side. Pay any amount. Every opinion has a price.">
+<meta name="twitter:title" content="SIDE/QUEST — Pick a side">
+<meta name="twitter:description" content="The world's first rolling opinion poll. Back your opinion with real money.">
 <meta name="twitter:image" content="https://www.sidequest.vote/og.png">
 
 <link rel="preload" href="/fonts/Tomorrow-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/fonts/Tomorrow-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/Tomorrow-Medium.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-  @font-face { font-family: 'Tomorrow'; font-weight: 400; font-style: normal; font-display: swap;
-    src: url('/fonts/Tomorrow-Regular.woff2') format('woff2'); }
   @font-face { font-family: 'Tomorrow'; font-weight: 500; font-style: normal; font-display: swap;
     src: url('/fonts/Tomorrow-Medium.woff2') format('woff2'); }
   @font-face { font-family: 'Tomorrow'; font-weight: 600; font-style: normal; font-display: swap;
     src: url('/fonts/Tomorrow-SemiBold.woff2') format('woff2'); }
 
-  :root {
-    --bg: #0A0A0A; --ca: #52B788; --cb: #D4A017;
-    --txt: #FFFFFF; --sub: #C8C8C8; --dim: #A8A8A8; --line: #2a2a2a;
-    --cut: 12px;
-  }
+  :root { --bg: #0A0A0A; --ca: #52B788; --cb: #D4A017; --txt: #FFFFFF; --sub: #C2C2C2; --cut: 14px; }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { background: var(--bg); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   body {
     background: var(--bg); color: var(--sub);
-    font-family: 'Tomorrow', sans-serif; font-weight: 400;
+    font-family: 'Tomorrow', sans-serif; font-weight: 500;
     -webkit-font-smoothing: antialiased;
     min-height: 100vh; min-height: 100svh;
   }
-
   .grid-bg {
     position: fixed; inset: 0; z-index: 0; pointer-events: none;
-    background-image:
-      linear-gradient(#1a1a1a 0.5px, transparent 0.5px),
-      linear-gradient(90deg, #1a1a1a 0.5px, transparent 0.5px);
+    background-image: linear-gradient(#1a1a1a 0.5px, transparent 0.5px), linear-gradient(90deg, #1a1a1a 0.5px, transparent 0.5px);
     background-size: 48px 48px; opacity: 0.5;
   }
   .top-accent { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: #1B5E37; z-index: 100; }
@@ -61,89 +52,56 @@
     position: relative; z-index: 1;
     min-height: 100vh; min-height: 100svh;
     display: flex; flex-direction: column;
-    padding: calc(14px + env(safe-area-inset-top, 0px)) calc(20px + env(safe-area-inset-right, 0px))
-             calc(14px + env(safe-area-inset-bottom, 0px)) calc(20px + env(safe-area-inset-left, 0px));
+    padding: calc(16px + env(safe-area-inset-top, 0px)) calc(24px + env(safe-area-inset-right, 0px))
+             calc(16px + env(safe-area-inset-bottom, 0px)) calc(24px + env(safe-area-inset-left, 0px));
     max-width: 520px; margin: 0 auto;
   }
 
-  /* TOP */
   .top-row { display: flex; justify-content: space-between; align-items: center; min-height: 32px; }
-  .logo { font-size: 18px; font-weight: 600; color: var(--txt); letter-spacing: 0.04em; }
+  .logo { font-size: 16px; font-weight: 600; color: var(--txt); letter-spacing: 0.04em; }
   .logo span { color: var(--ca); }
-  .quest-pill {
-    display: flex; align-items: center; gap: 8px; min-height: 32px;
-    font-size: 13px; font-weight: 500; letter-spacing: 0.12em; color: var(--sub); text-decoration: none;
-  }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: #666; flex: none; }
-  .dot.fresh { background: var(--ca); animation: pulse 1.4s infinite; }
+  .quest-pill { display: flex; align-items: center; gap: 8px; min-height: 32px; font-size: 13px; letter-spacing: 0.12em; color: var(--sub); text-decoration: none; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ca); animation: pulse 1.4s infinite; }
   @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.25 } }
 
-  /* HERO */
-  .hero { margin-top: clamp(14px, 4svh, 40px); }
-  .eyebrow { font-size: 13px; letter-spacing: 0.03em; color: var(--ca); margin-bottom: 8px; line-height: 1.4; }
-  .title {
-    font-size: clamp(38px, 11.4vw, 58px); white-space: nowrap; font-weight: 600; color: var(--txt);
-    line-height: 0.95; letter-spacing: 0;
-  }
-  .title .slash { color: var(--ca); }
+  .hero { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 20px 0; }
+  .eyebrow { font-size: 13px; letter-spacing: 0.03em; color: var(--ca); line-height: 1.4; margin-bottom: 12px; }
+  .title { font-size: clamp(52px, 17vw, 84px); font-weight: 600; line-height: 0.96; color: var(--txt); }
+  .split { display: flex; width: 168px; height: 5px; margin: 18px 0 20px; }
+  .split i { flex: 1; display: block; }
+  .split .a { background: var(--ca); } .split .b { background: var(--cb); }
+  .lede { font-size: 18px; line-height: 1.55; color: var(--txt); max-width: 30em; }
+  .lede em { font-style: normal; color: var(--ca); }
 
-  .question {
-    margin-top: clamp(12px, 2.6svh, 28px);
-    padding: 12px 14px 14px;
-    background: #121212; border-left: 3px solid var(--ca);
-    clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%);
-  }
-  .q-label { font-size: 13px; font-weight: 500; letter-spacing: 0.14em; color: var(--ca); margin-bottom: 4px; }
-  .q-text { font-size: 22px; font-weight: 600; line-height: 1.2; color: var(--txt); text-transform: uppercase; letter-spacing: 0.01em; }
+  .steps { list-style: none; margin-top: clamp(22px, 4svh, 36px); border-top: 1px solid #2a2a2a; }
+  .steps li { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 1px solid #2a2a2a; font-size: 15px; letter-spacing: 0.06em; line-height: 1.35; color: var(--txt); text-transform: uppercase; }
+  .steps b { flex: none; width: 26px; color: var(--ca); font-weight: 600; font-size: 15px; letter-spacing: 0.08em; }
+  .steps small { display: block; margin-top: 3px; font-size: 13px; letter-spacing: 0.04em; color: var(--sub); text-transform: none; }
 
-  /* PAY BUTTONS */
-  .pay { display: grid; gap: 10px; margin-top: clamp(12px, 2.6svh, 26px); }
-  .btn {
-    position: relative; display: flex; align-items: center; justify-content: space-between;
-    min-height: 60px; padding: 0 18px 0 20px;
-    font-family: inherit; font-size: 18px; font-weight: 600; letter-spacing: 0.06em;
-    color: #0A0A0A; text-decoration: none; text-transform: uppercase;
+  .cta {
+    display: flex; align-items: center; justify-content: space-between;
+    min-height: 68px; margin-top: clamp(22px, 4svh, 34px); padding: 0 22px 0 24px;
+    background: var(--ca); color: #0A0A0A; text-decoration: none;
+    font-size: 20px; font-weight: 600; letter-spacing: 0.08em;
     -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
     transition: filter .12s, transform .08s;
   }
-  .btn-a { background: var(--ca); }
-  .btn-b { background: var(--cb); }
-  .btn:active { filter: brightness(0.82); transform: scale(0.985); }
-  .btn svg { width: 22px; height: 22px; flex: none; }
-  .btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .cta:active { filter: brightness(0.82); transform: scale(0.985); }
+  .cta:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .cta svg { width: 26px; height: 26px; flex: none; }
 
-  /* SCORE STRIP */
-  .score { margin-top: clamp(12px, 2.6svh, 26px); padding: 12px 14px; border: 1px solid var(--line); background: #0f0f0f;
-    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)); }
-  .score-head { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 500; letter-spacing: 0.1em; color: var(--sub); }
-  .score-head .l { display: flex; align-items: center; gap: 8px; }
-  .score-head a { color: var(--sub); text-decoration: none; min-height: 24px; display: inline-flex; align-items: center; border-bottom: 1px solid #555; }
-  .score-nums { display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px; }
-  .num { font-size: 26px; font-weight: 600; letter-spacing: 0; line-height: 1.1; }
-  .num small { display: block; font-size: 13px; font-weight: 500; letter-spacing: 0.1em; margin-bottom: 2px; }
-  .num.a { color: var(--ca); } .num.b { color: var(--cb); text-align: right; }
-  .bar { display: flex; height: 8px; margin-top: 8px; background: #222; overflow: hidden; }
-  .bar i { display: block; height: 100%; transition: width .9s ease; }
-  .bar .ba { background: var(--ca); width: 50%; } .bar .bb { background: var(--cb); flex: 1; }
-  .pcts { display: flex; justify-content: space-between; font-size: 13px; margin-top: 6px; color: var(--dim); letter-spacing: 0.06em; }
-
-  /* STEPS */
-  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: auto; padding-top: clamp(14px, 3svh, 24px); }
-  .step { border-top: 2px solid #2f2f2f; padding-top: 8px; font-size: 13px; font-weight: 500; letter-spacing: 0.05em; line-height: 1.35; color: var(--sub); }
-  .step b { display: block; color: var(--ca); font-weight: 600; font-size: 14px; letter-spacing: 0.08em; margin-bottom: 2px; }
-
-  /* FOOT */
-  .foot { margin-top: auto; padding-top: clamp(14px, 3svh, 24px); }
-  .fine { font-size: 13px; line-height: 1.5; color: var(--dim); margin-bottom: 12px; }
-  .tagline { font-weight: 500; font-size: 14px; letter-spacing: 0.14em; color: #D0D0D0; margin-bottom: 4px; }
+  .foot { padding-top: 8px; }
+  .tagline { font-size: 14px; font-weight: 600; letter-spacing: 0.14em; color: var(--txt); margin-bottom: 4px; }
   .domain { font-size: 13px; letter-spacing: 0.1em; color: var(--ca); }
 
   @media (max-height: 700px) {
-    .btn { min-height: 56px; }
-    .q-text { font-size: 20px; }
+    .hero { padding: 12px 0; }
+    .lede { font-size: 16px; line-height: 1.5; }
+    .steps li { padding: 10px 0; }
+    .cta { min-height: 60px; }
   }
-  @media (prefers-reduced-motion: reduce) { .dot.fresh { animation: none; } .bar i { transition: none; } .btn { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .dot { animation: none; } .cta { transition: none; } }
 </style>
 </head>
 <body>
@@ -153,102 +111,29 @@
 <main class="page">
   <header class="top-row">
     <div class="logo">SIDE<span>/</span>QUEST</div>
-    <a class="quest-pill" href="/tracker.html"><span class="dot" id="dot"></span><span id="qnum">QUEST #001</span></a>
+    <a class="quest-pill" href="/quest"><span class="dot"></span>QUEST #001</a>
   </header>
 
   <section class="hero">
     <div class="eyebrow">// THE WORLD'S FIRST ROLLING OPINION POLL</div>
-    <h1 class="title">PICK A SIDE</h1>
+    <h1 class="title">PICK A<br>SIDE</h1>
+    <div class="split" aria-hidden="true"><i class="a"></i><i class="b"></i></div>
+    <p class="lede">One Cybertruck. Two sides. Put real money behind your opinion and watch the board move live. <em>Anyone can flip it.</em></p>
 
-    <div class="question">
-      <div class="q-label">// THE QUESTION</div>
-      <div class="q-text" id="qtitle">THE CYBERTRUCK: LOVE IT OR HATE IT?</div>
-    </div>
+    <ol class="steps">
+      <li><b>01</b><span>Read the question</span></li>
+      <li><b>02</b><span>Pick a side</span></li>
+      <li><b>03</b><span>Back it on Venmo. Any amount.<small>Bigger stake, louder side.</small></span></li>
+    </ol>
 
-    <nav class="pay" aria-label="Choose a side and pay on Venmo">
-      <a class="btn btn-a" id="payA" href="/a"><span id="lblA">SIDE A · LOVE IT</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg></a>
-      <a class="btn btn-b" id="payB" href="/b"><span id="lblB">SIDE B · HATE IT</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg></a>
-    </nav>
-
-    <section class="score" aria-label="Live score">
-      <div class="score-head">
-        <span class="l"><span class="dot" id="liveDot"></span><span id="liveText">LIVE</span></span>
-        <a href="/tracker.html">FULL BOARD</a>
-      </div>
-      <div class="score-nums">
-        <div class="num a"><small id="nameA">LOVE IT</small><span id="amtA">$0</span></div>
-        <div class="num b"><small id="nameB">HATE IT</small><span id="amtB">$0</span></div>
-      </div>
-      <div class="bar" aria-hidden="true"><i class="ba" id="barA"></i><i class="bb"></i></div>
-      <div class="pcts"><span id="pctA">50%</span><span id="pctB">50%</span></div>
-    </section>
-  </section>
-
-  <section class="steps" aria-label="How it works">
-    <div class="step"><b>01</b>LOOK AT THE BOARD</div>
-    <div class="step"><b>02</b>PICK A SIDE</div>
-    <div class="step"><b>03</b>PAY ANY AMOUNT</div>
+    <a class="cta" href="/quest"><span>ENTER THE QUEST</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg></a>
   </section>
 
   <footer class="foot">
-    <p class="fine">Payments go to Venmo @SideQuestVote and are final. All proceeds go to the truck owner.</p>
     <div class="tagline">EVERY OPINION HAS A PRICE</div>
     <div class="domain">SIDEQUEST.VOTE</div>
   </footer>
 </main>
-
-<script>
-(function () {
-  var URL_ = '/data/quest.json', POLL = 20000, STALE = 75000;
-  var $ = function (id) { return document.getElementById(id); };
-  var lastOk = 0, timer = null, busy = false;
-  var fmt = function (n) { return '$' + Math.round(Number(n) || 0).toLocaleString('en-US'); };
-  var okColor = function (c) { return /^#[0-9a-fA-F]{6}$/.test(c || '') ? c : null; };
-  var up = function (s) { return String(s == null ? '' : s).toUpperCase(); };
-
-  function render(d) {
-    var A = d.sideA, B = d.sideB, root = document.documentElement.style;
-    var cA = okColor(A.color), cB = okColor(B.color);
-    if (cA) root.setProperty('--ca', cA);
-    if (cB) root.setProperty('--cb', cB);
-    if (d.title) $('qtitle').textContent = up(d.title);
-    if (d.questNum) $('qnum').textContent = 'QUEST #' + String(d.questNum).padStart(3, '0');
-    var la = up(A.label || 'Love it'), lb = up(B.label || 'Hate it');
-    $('lblA').textContent = 'SIDE A · ' + la; $('lblB').textContent = 'SIDE B · ' + lb;
-    $('nameA').textContent = la; $('nameB').textContent = lb;
-    if (A.link) $('payA').setAttribute('href', A.link);
-    if (B.link) $('payB').setAttribute('href', B.link);
-    var a = Number(A.total) || 0, b = Number(B.total) || 0, t = a + b;
-    var pA = t > 0 ? Math.round(a / t * 100) : 50;
-    $('amtA').textContent = fmt(a); $('amtB').textContent = fmt(b);
-    $('barA').style.width = (t > 0 ? a / t * 100 : 50) + '%';
-    $('pctA').textContent = pA + '%'; $('pctB').textContent = (100 - pA) + '%';
-  }
-
-  function indicator() {
-    if (!lastOk) return;
-    var stale = Date.now() - lastOk > STALE;
-    $('liveText').textContent = stale ? 'OFFLINE' : 'LIVE';
-    $('liveDot').classList.toggle('fresh', !stale);
-    $('dot').classList.toggle('fresh', !stale);
-  }
-
-  function load() {
-    if (busy) return; busy = true;
-    fetch(URL_ + '?t=' + Date.now(), { cache: 'no-store' })
-      .then(function (r) { if (!r.ok) throw 0; return r.json(); })
-      .then(function (j) { if (!j || !j.sideA || !j.sideB) throw 0; render(j); lastOk = Date.now(); indicator(); })
-      .catch(function () {})
-      .then(function () { busy = false; });
-  }
-  function start() { stop(); timer = setInterval(load, POLL); }
-  function stop() { if (timer) { clearInterval(timer); timer = null; } }
-  document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else { load(); start(); } });
-  setInterval(function () { if (!document.hidden) indicator(); }, 5000);
-  load(); if (!document.hidden) start();
-})();
-</script>
 </body>
 </html>

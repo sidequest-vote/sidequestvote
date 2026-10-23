@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A0A0A">
+<meta name="color-scheme" content="dark">
+<title>SIDE/QUEST — The Cybertruck: love it or hate it?</title>
+<meta name="description" content="The Cybertruck: love it or hate it? Pick a side and put your money behind your opinion. Watch the live board.">
+<link rel="canonical" href="https://www.sidequest.vote/quest">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SIDE/QUEST">
+<meta property="og:url" content="https://www.sidequest.vote/quest">
+<meta property="og:title" content="SIDE/QUEST — The Cybertruck: love it or hate it?">
+<meta property="og:description" content="Pick a side. Put your money behind your opinion.">
+<meta property="og:image" content="https://www.sidequest.vote/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="SIDE/QUEST. The Cybertruck: love it or hate it? Every opinion has a price.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SIDE/QUEST — The Cybertruck: love it or hate it?">
+<meta name="twitter:description" content="Pick a side. Put your money behind your opinion.">
+<meta name="twitter:image" content="https://www.sidequest.vote/og.png">
+
+<link rel="preload" href="/fonts/Tomorrow-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/Tomorrow-Medium.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face { font-family: 'Tomorrow'; font-weight: 500; font-style: normal; font-display: swap;
+    src: url('/fonts/Tomorrow-Medium.woff2') format('woff2'); }
+  @font-face { font-family: 'Tomorrow'; font-weight: 600; font-style: normal; font-display: swap;
+    src: url('/fonts/Tomorrow-SemiBold.woff2') format('woff2'); }
+
+  :root { --bg: #0A0A0A; --ca: #52B788; --cb: #D4A017; --txt: #FFFFFF; --sub: #B8B8B8; --cut: 14px; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--bg); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body {
+    background: var(--bg); color: var(--sub);
+    font-family: 'Tomorrow', sans-serif; font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh; min-height: 100svh;
+  }
+  .top-accent { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: #1B5E37; z-index: 100; }
+
+  .page {
+    min-height: 100vh; min-height: 100svh;
+    display: flex; flex-direction: column;
+    padding: calc(16px + env(safe-area-inset-top, 0px)) calc(24px + env(safe-area-inset-right, 0px))
+             calc(16px + env(safe-area-inset-bottom, 0px)) calc(24px + env(safe-area-inset-left, 0px));
+    max-width: 520px; margin: 0 auto;
+  }
+
+  /* top */
+  .top-row { display: flex; justify-content: space-between; align-items: center; min-height: 32px; }
+  .logo { text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; font-size: 16px; font-weight: 600; color: var(--txt); letter-spacing: 0.04em; }
+  .logo span { color: var(--ca); }
+  .quest-pill { display: flex; align-items: center; gap: 8px; min-height: 32px; font-size: 13px; letter-spacing: 0.12em; color: var(--sub); text-decoration: none; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #666; flex: none; }
+  .dot.fresh { background: var(--ca); animation: pulse 1.4s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.25 } }
+
+  /* main: question + buttons + score, centered in the free space */
+  .main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 24px 0; }
+  .question {
+    font-size: clamp(34px, 10.4vw, 48px); font-weight: 600; line-height: 1.06;
+    color: var(--txt); text-transform: uppercase; letter-spacing: 0; text-wrap: balance;
+  }
+  .instruct { margin-top: clamp(28px, 6svh, 56px); margin-bottom: 14px; font-size: 14px; letter-spacing: 0.06em; color: var(--sub); }
+
+  .pay { display: grid; gap: 12px; }
+  .btn {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    min-height: 84px; padding: 0 22px 0 24px;
+    color: #0A0A0A; text-decoration: none; text-transform: uppercase;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+    clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+    transition: filter .12s, transform .08s;
+  }
+  .btn-a { background: var(--ca); }
+  .btn-b { background: var(--cb); }
+  .btn:active { filter: brightness(0.82); transform: scale(0.985); }
+  .btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .btn .t { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .btn .side { font-size: 13px; font-weight: 600; letter-spacing: 0.14em; opacity: 0.75; }
+  .btn .big { font-size: 30px; font-weight: 600; letter-spacing: 0.03em; line-height: 1.05; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .btn .go { display: flex; align-items: center; gap: 8px; flex: none; font-size: 13px; font-weight: 600; letter-spacing: 0.1em; }
+  .btn .go svg { width: 22px; height: 22px; }
+
+  /* score: one quiet line */
+  .score { margin-top: clamp(22px, 4svh, 36px); }
+  .score-nums { display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: 600; }
+  .score-nums .a { color: var(--ca); } .score-nums .b { color: var(--cb); }
+  .score-nums .mid { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; letter-spacing: 0.12em; color: var(--sub); }
+  .bar { display: flex; height: 4px; margin-top: 10px; background: #222; overflow: hidden; }
+  .bar i { display: block; height: 100%; transition: width .9s ease; }
+  .bar .ba { background: var(--ca); width: 50%; } .bar .bb { background: var(--cb); flex: 1; }
+
+  /* foot */
+  .foot { padding-top: 8px; }
+  .fine { font-size: 13px; line-height: 1.5; color: var(--sub); margin-bottom: 12px; opacity: 0.85; }
+  .foot-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .tagline { font-size: 13px; font-weight: 600; letter-spacing: 0.14em; color: var(--txt); margin-bottom: 4px; }
+  .foot a { font-size: 13px; letter-spacing: 0.08em; color: var(--sub); text-decoration: underline; text-underline-offset: 3px; min-height: 32px; display: inline-flex; align-items: center; }
+
+  @media (max-height: 700px) {
+    .main { padding: 16px 0; }
+    .btn { min-height: 72px; }
+    .btn .big { font-size: 26px; }
+    .instruct { margin-top: 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .dot.fresh { animation: none; } .bar i, .btn { transition: none; } }
+</style>
+</head>
+<body>
+<div class="top-accent"></div>
+
+<main class="page">
+  <header class="top-row">
+    <a class="logo" href="/" aria-label="SIDE/QUEST home">SIDE<span>/</span>QUEST</a>
+    <div class="quest-pill"><span id="qnum">QUEST #001</span></div>
+  </header>
+
+  <section class="main">
+    <h1 class="question" id="qtitle">THE CYBERTRUCK: LOVE IT OR HATE IT?</h1>
+
+    <p class="instruct">PICK A SIDE. BACK IT WITH MONEY.</p>
+    <nav class="pay" aria-label="Pick a side and back it">
+      <a class="btn btn-a" id="payA" href="/a">
+        <span class="t"><span class="side">SIDE A</span><span class="big" id="lblA">LOVE IT</span></span>
+        <span class="go">BACK IT <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg></span>
+      </a>
+      <a class="btn btn-b" id="payB" href="/b">
+        <span class="t"><span class="side">SIDE B</span><span class="big" id="lblB">HATE IT</span></span>
+        <span class="go">BACK IT <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg></span>
+      </a>
+    </nav>
+
+    <section class="score" aria-label="Live score">
+      <div class="score-nums">
+        <span class="a" id="amtA">$0</span>
+        <span class="mid"><span class="dot" id="liveDot"></span><span id="liveText">LIVE</span></span>
+        <span class="b" id="amtB">$0</span>
+      </div>
+      <div class="bar" aria-hidden="true"><i class="ba" id="barA"></i><i class="bb"></i></div>
+    </section>
+  </section>
+
+  <footer class="foot">
+    <p class="fine">Votes are Venmo payments to @SideQuestVote and are final. All proceeds go to the truck owner.</p>
+    <div class="tagline">EVERY OPINION HAS A PRICE</div>
+    <div class="foot-row">
+            <a href="/">about</a>
+      <a href="/tracker.html">full board</a>
+    </div>
+  </footer>
+</main>
+
+<script>
+(function () {
+  var URL_ = '/data/quest.json', POLL = 20000, STALE = 75000;
+  var $ = function (id) { return document.getElementById(id); };
+  var lastOk = 0, timer = null, busy = false;
+  var fmt = function (n) { return '$' + Math.round(Number(n) || 0).toLocaleString('en-US'); };
+  var okColor = function (c) { return /^#[0-9a-fA-F]{6}$/.test(c || '') ? c : null; };
+  var up = function (s) { return String(s == null ? '' : s).toUpperCase(); };
+
+  function render(d) {
+    var A = d.sideA, B = d.sideB, root = document.documentElement.style;
+    var cA = okColor(A.color), cB = okColor(B.color);
+    if (cA) root.setProperty('--ca', cA);
+    if (cB) root.setProperty('--cb', cB);
+    if (d.title) $('qtitle').textContent = up(d.title);
+    if (d.questNum) $('qnum').textContent = 'QUEST #' + String(d.questNum).padStart(3, '0');
+    $('lblA').textContent = up(A.label || 'Love it'); $('lblB').textContent = up(B.label || 'Hate it');
+    if (A.link) $('payA').setAttribute('href', A.link);
+    if (B.link) $('payB').setAttribute('href', B.link);
+    var a = Number(A.total) || 0, b = Number(B.total) || 0, t = a + b;
+    $('amtA').textContent = fmt(a); $('amtB').textContent = fmt(b);
+    $('barA').style.width = (t > 0 ? a / t * 100 : 50) + '%';
+  }
+
+  function indicator() {
+    if (!lastOk) return;
+    var stale = Date.now() - lastOk > STALE;
+    $('liveText').textContent = stale ? 'OFFLINE' : 'LIVE';
+    $('liveDot').classList.toggle('fresh', !stale);
+  }
+
+  function load() {
+    if (busy) return; busy = true;
+    fetch(URL_ + '?t=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (j) { if (!j || !j.sideA || !j.sideB) throw 0; render(j); lastOk = Date.now(); indicator(); })
+      .catch(function () {})
+      .then(function () { busy = false; });
+  }
+  function start() { stop(); timer = setInterval(load, POLL); }
+  function stop() { if (timer) { clearInterval(timer); timer = null; } }
+  document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else { load(); start(); } });
+  setInterval(function () { if (!document.hidden) indicator(); }, 5000);
+  load(); if (!document.hidden) start();
+})();
+</script>
+</body>
+</html>
