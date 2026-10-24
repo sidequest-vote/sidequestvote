@@ -1,6 +1,6 @@
 {
-  "processedMessageIds": ["1a16a7ffabe7c051"],
-  "needsReview": [
-    { "messageId": "1a16a7ffabe7c051", "receivedAt": "2026-10-23T20:42:12Z", "reason": "no side note ($375.00 to @SideQuestVote)" }
-  ]
+  "processedMessageIds": [
+    "1a16a7ffabe7c051"
+  ],
+  "needsReview": []
 }
